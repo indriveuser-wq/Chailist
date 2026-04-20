@@ -281,6 +281,7 @@ function NewShop() {
           </Button>
         </form>
       </main>
+      <BottomNav />
     </div>
   );
 }
