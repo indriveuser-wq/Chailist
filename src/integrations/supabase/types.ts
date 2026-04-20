@@ -14,16 +14,205 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      ratings: {
+        Row: {
+          ambience: number | null
+          created_at: string
+          id: string
+          rating: number
+          review_text: string | null
+          shop_id: string
+          taste: number | null
+          user_id: string
+          value: number | null
+        }
+        Insert: {
+          ambience?: number | null
+          created_at?: string
+          id?: string
+          rating: number
+          review_text?: string | null
+          shop_id: string
+          taste?: number | null
+          user_id: string
+          value?: number | null
+        }
+        Update: {
+          ambience?: number | null
+          created_at?: string
+          id?: string
+          rating?: number
+          review_text?: string | null
+          shop_id?: string
+          taste?: number | null
+          user_id?: string
+          value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ratings_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shop_stats"
+            referencedColumns: ["shop_id"]
+          },
+          {
+            foreignKeyName: "ratings_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shops: {
+        Row: {
+          approved: boolean
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          location: string
+          name: string
+          owner_id: string | null
+          price_range: string
+          starting_price: number
+          tags: string[]
+          updated_at: string
+          verified: boolean
+        }
+        Insert: {
+          approved?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          location: string
+          name: string
+          owner_id?: string | null
+          price_range?: string
+          starting_price?: number
+          tags?: string[]
+          updated_at?: string
+          verified?: boolean
+        }
+        Update: {
+          approved?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string
+          name?: string
+          owner_id?: string | null
+          price_range?: string
+          starting_price?: number
+          tags?: string[]
+          updated_at?: string
+          verified?: boolean
+        }
+        Relationships: []
+      }
+      tea_items: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          price: number
+          shop_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          price: number
+          shop_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          price?: number
+          shop_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tea_items_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shop_stats"
+            referencedColumns: ["shop_id"]
+          },
+          {
+            foreignKeyName: "tea_items_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      shop_stats: {
+        Row: {
+          avg_rating: number | null
+          rating_count: number | null
+          shop_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "shop_owner" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +339,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "shop_owner", "user"],
+    },
   },
 } as const
