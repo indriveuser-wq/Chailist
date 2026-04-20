@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Header } from "@/components/Header";
+import { BottomNav } from "@/components/BottomNav";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -123,8 +123,7 @@ function NewShop() {
   if (loading || !user) return null;
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <div className="min-h-screen bg-background pb-24">
       <main className="mx-auto max-w-2xl px-4 py-6">
         <div className="mb-4">
           <Link to="/" className="text-xs text-muted-foreground hover:text-foreground">
@@ -282,6 +281,7 @@ function NewShop() {
           </Button>
         </form>
       </main>
+      <BottomNav />
     </div>
   );
 }
