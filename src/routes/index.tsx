@@ -1,27 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Header } from "@/components/Header";
-import { ShopCard } from "@/components/ShopCard";
+import { BottomNav } from "@/components/BottomNav";
+import { ShopCard, ShopCardSkeleton } from "@/components/ShopCard";
+import { MoodChips, MOODS } from "@/components/MoodChips";
 import { fetchShops, type ShopWithStats } from "@/lib/queries";
-import heroImg from "@/assets/hero-tea.jpg";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { Logo, Wordmark } from "@/components/Logo";
+import { useAuth } from "@/lib/auth";
+import { Search, ChevronRight, Sparkles, Bell } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -30,212 +16,190 @@ export const Route = createFileRoute("/")({
       { title: "ChaiList — Discover & Rate Tea Shops" },
       {
         name: "description",
-        content: "Find the best chai spots — filter by vibe, price, and rating. Rate your favorites.",
+        content: "Find the coziest chai spots near you. Browse, save, and rate tea shops on ChaiList.",
       },
     ],
   }),
 });
 
-const ALL_TAGS = ["cozy", "scenic", "local", "rooftop", "study", "outdoor", "premium", "street"];
-
 function Home() {
   const [shops, setShops] = useState<ShopWithStats[] | null>(null);
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState("popular");
-  const [minRating, setMinRating] = useState(0);
-  const [priceRange, setPriceRange] = useState<string>("any");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [mood, setMood] = useState("all");
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchShops().then(setShops).catch(console.error);
   }, []);
 
+  const moodTag = useMemo(() => MOODS.find((m) => m.id === mood)?.tag ?? null, [mood]);
+
   const filtered = useMemo(() => {
     if (!shops) return [];
-    let r = shops.filter((s) => {
-      if (search && !`${s.name} ${s.location}`.toLowerCase().includes(search.toLowerCase()))
-        return false;
-      if (minRating && s.avg_rating < minRating) return false;
-      if (priceRange !== "any" && s.price_range !== priceRange) return false;
-      if (selectedTags.length && !selectedTags.every((t) => s.tags.includes(t))) return false;
+    return shops.filter((s) => {
+      if (search && !`${s.name} ${s.location}`.toLowerCase().includes(search.toLowerCase())) return false;
+      if (moodTag && !s.tags.includes(moodTag)) return false;
       return true;
     });
-    if (sort === "rating") r = [...r].sort((a, b) => b.avg_rating - a.avg_rating);
-    else if (sort === "price-low") r = [...r].sort((a, b) => a.starting_price - b.starting_price);
-    else if (sort === "price-high") r = [...r].sort((a, b) => b.starting_price - a.starting_price);
-    else r = [...r].sort((a, b) => b.rating_count - a.rating_count);
-    return r;
-  }, [shops, search, sort, minRating, priceRange, selectedTags]);
+  }, [shops, search, moodTag]);
+
+  const topRated = useMemo(
+    () => (shops ?? []).filter((s) => s.rating_count > 0).sort((a, b) => b.avg_rating - a.avg_rating).slice(0, 5),
+    [shops],
+  );
+
+  const greeting = useMemo(() => {
+    const h = new Date().getHours();
+    if (h < 12) return "Good morning";
+    if (h < 17) return "Good afternoon";
+    return "Good evening";
+  }, []);
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0">
-          <img src={heroImg} alt="" className="h-full w-full object-cover" width={1280} height={800} />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/30 to-background" />
-        </div>
-        <div className="relative mx-auto max-w-5xl px-4 pb-10 pt-12 sm:pt-20">
-          <h1 className="font-display text-3xl font-extrabold leading-tight tracking-tight text-foreground sm:text-5xl">
-            Find your next favorite <span className="text-primary">cup of chai</span>
-          </h1>
-          <p className="mt-2 max-w-xl text-sm text-foreground/80 sm:text-base">
-            Honest reviews of tea shops, by tea lovers like you.
-          </p>
-          <div className="mt-5 flex max-w-xl items-center gap-2 rounded-2xl border border-border bg-card p-1.5 shadow-[var(--shadow-elevated)]">
-            <Search className="ml-2 h-4 w-4 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search shops or locations…"
-              className="border-0 bg-transparent shadow-none focus-visible:ring-0"
-            />
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button size="sm" variant="secondary" className="gap-1.5">
-                  <SlidersHorizontal className="h-4 w-4" /> Filters
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="bottom" className="rounded-t-2xl">
-                <SheetHeader>
-                  <SheetTitle>Filters</SheetTitle>
-                </SheetHeader>
-                <div className="space-y-5 py-4">
-                  <div>
-                    <label className="text-sm font-medium">Min rating: {minRating || "any"}</label>
-                    <Slider
-                      value={[minRating]}
-                      onValueChange={([v]) => setMinRating(v)}
-                      max={5}
-                      step={1}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Price range</label>
-                    <div className="mt-2 grid grid-cols-4 gap-2">
-                      {["any", "low", "medium", "high"].map((p) => (
-                        <button
-                          key={p}
-                          onClick={() => setPriceRange(p)}
-                          className={`rounded-md border px-2 py-1.5 text-xs capitalize transition ${
-                            priceRange === p
-                              ? "border-primary bg-primary text-primary-foreground"
-                              : "border-border bg-card"
-                          }`}
-                        >
-                          {p === "low" ? "₹" : p === "medium" ? "₹₹" : p === "high" ? "₹₹₹" : p}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Vibe / tags</label>
-                    <div className="mt-2 flex flex-wrap gap-1.5">
-                      {ALL_TAGS.map((t) => {
-                        const on = selectedTags.includes(t);
-                        return (
-                          <button
-                            key={t}
-                            onClick={() =>
-                              setSelectedTags((s) =>
-                                on ? s.filter((x) => x !== t) : [...s, t],
-                              )
-                            }
-                            className={`rounded-full border px-3 py-1 text-xs transition ${
-                              on
-                                ? "border-primary bg-primary text-primary-foreground"
-                                : "border-border bg-card"
-                            }`}
-                          >
-                            {t}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
+    <div className="min-h-screen bg-background pb-24">
+      {/* Top header */}
+      <header className="px-4 pt-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <Logo size={36} />
+            <div className="leading-tight">
+              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                {greeting}
+              </p>
+              <Wordmark />
+            </div>
           </div>
+          <button
+            className="tap-shrink relative flex h-10 w-10 items-center justify-center rounded-full bg-card shadow-[var(--shadow-soft)]"
+            aria-label="Notifications"
+          >
+            <Bell className="h-4 w-4" />
+            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-accent" />
+          </button>
         </div>
+
+        <h1 className="mt-5 font-display text-2xl font-extrabold leading-tight">
+          Find your <span className="text-primary">perfect cup</span>
+          <br />
+          of chai today.
+        </h1>
+
+        {/* Search */}
+        <Link
+          to="/explore"
+          className="mt-4 flex items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3 shadow-[var(--shadow-soft)] tap-shrink"
+        >
+          <Search className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm text-muted-foreground">Search shops, locations, vibes…</span>
+        </Link>
+      </header>
+
+      {/* Mood categories */}
+      <section className="mt-6 px-4">
+        <div className="mb-3 flex items-end justify-between">
+          <h2 className="font-display text-lg font-bold">Tea moods</h2>
+          <span className="text-xs text-muted-foreground">Pick a vibe</span>
+        </div>
+        <MoodChips active={mood} onChange={setMood} />
       </section>
 
-      {/* Sort + chips */}
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-4 pt-4">
-        <p className="text-sm text-muted-foreground">
-          {shops === null ? "Loading…" : `${filtered.length} shops`}
-        </p>
-        <Select value={sort} onValueChange={setSort}>
-          <SelectTrigger className="h-8 w-[140px] text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="popular">Most reviewed</SelectItem>
-            <SelectItem value="rating">Highest rated</SelectItem>
-            <SelectItem value="price-low">Price: low → high</SelectItem>
-            <SelectItem value="price-high">Price: high → low</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      {(selectedTags.length > 0 || minRating > 0 || priceRange !== "any") && (
-        <div className="mx-auto flex max-w-5xl flex-wrap gap-1.5 px-4 pt-2">
-          {minRating > 0 && (
-            <Chip onClear={() => setMinRating(0)}>≥ {minRating}★</Chip>
-          )}
-          {priceRange !== "any" && (
-            <Chip onClear={() => setPriceRange("any")}>{priceRange}</Chip>
-          )}
-          {selectedTags.map((t) => (
-            <Chip key={t} onClear={() => setSelectedTags((s) => s.filter((x) => x !== t))}>
-              {t}
-            </Chip>
-          ))}
-        </div>
+      {/* Top rated horizontal */}
+      {topRated.length > 0 && (
+        <section className="mt-6">
+          <div className="mb-3 flex items-end justify-between px-4">
+            <h2 className="flex items-center gap-1.5 font-display text-lg font-bold">
+              <Sparkles className="h-4 w-4 text-accent" />
+              Top rated near you
+            </h2>
+          </div>
+          <div className="no-scrollbar -mr-4 overflow-x-auto pl-4 pr-4">
+            <div className="flex gap-3">
+              {topRated.map((s, i) => (
+                <Link
+                  key={s.id}
+                  to="/shops/$shopId"
+                  params={{ shopId: s.id }}
+                  className="tap-shrink relative block w-64 shrink-0 animate-fade-up overflow-hidden rounded-2xl shadow-[var(--shadow-card)]"
+                  style={{ animationDelay: `${i * 60}ms` }}
+                >
+                  <div className="aspect-[4/5] w-full overflow-hidden bg-muted">
+                    {s.image_url && (
+                      <img
+                        src={s.image_url}
+                        alt={s.name}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-700 hover:scale-110"
+                      />
+                    )}
+                  </div>
+                  <div className="absolute inset-0 bg-[var(--gradient-overlay)]" />
+                  <div className="absolute inset-x-3 bottom-3 text-primary-foreground">
+                    <div className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-accent-foreground">
+                      ★ {s.avg_rating.toFixed(1)}
+                    </div>
+                    <h3 className="mt-1.5 font-display text-base font-bold leading-tight text-white drop-shadow">
+                      {s.name}
+                    </h3>
+                    <p className="text-xs text-white/90 drop-shadow">{s.location}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
       )}
 
-      <main className="mx-auto max-w-5xl px-4 py-5">
+      {/* All shops */}
+      <section className="mt-6 px-4">
+        <div className="mb-3 flex items-end justify-between">
+          <h2 className="font-display text-lg font-bold">
+            {moodTag ? `${MOODS.find((m) => m.id === mood)?.label} spots` : "All tea shops"}
+          </h2>
+          <Link to="/explore" className="tap-shrink inline-flex items-center text-xs font-semibold text-primary">
+            See all <ChevronRight className="h-3 w-3" />
+          </Link>
+        </div>
         {shops === null ? (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="aspect-[16/10] animate-pulse rounded-xl bg-muted" />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <ShopCardSkeleton key={i} />
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-border p-10 text-center">
+          <div className="rounded-2xl border border-dashed border-border p-8 text-center">
             <p className="text-4xl">🍵</p>
-            <h3 className="mt-2 font-display text-lg font-semibold">No shops yet</h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Be the first to add a tea shop to ChaiList.
-            </p>
-            <Button asChild className="mt-4">
-              <Link to="/shops/new">Add a shop</Link>
-            </Button>
+            <h3 className="mt-2 font-display text-base font-bold">No shops match this mood</h3>
+            <p className="mt-1 text-sm text-muted-foreground">Try another vibe above.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((s) => (
-              <ShopCard key={s.id} shop={s} />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {filtered.slice(0, 6).map((s, i) => (
+              <ShopCard key={s.id} shop={s} index={i} />
             ))}
           </div>
         )}
-      </main>
-      <footer className="border-t border-border py-6 text-center text-xs text-muted-foreground">
-        Brewed with 🍵 by ChaiList
-      </footer>
+      </section>
+
+      {/* sign-in CTA */}
+      {!user && (
+        <section className="mt-8 px-4">
+          <div className="overflow-hidden rounded-2xl bg-[var(--gradient-hero)] p-5 text-primary-foreground shadow-[var(--shadow-elevated)]">
+            <h3 className="font-display text-lg font-bold">Save your favorites</h3>
+            <p className="mt-1 text-sm opacity-90">Sign in to rate shops and build your tea map.</p>
+            <Link
+              to="/login"
+              className="tap-shrink mt-3 inline-flex items-center gap-1 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
+            >
+              Get started <ChevronRight className="h-3 w-3" />
+            </Link>
+          </div>
+        </section>
+      )}
+
+      <BottomNav />
     </div>
   );
 }
 
-function Chip({ children, onClear }: { children: React.ReactNode; onClear: () => void }) {
-  return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-xs">
-      {children}
-      <button onClick={onClear} className="opacity-60 hover:opacity-100">
-        <X className="h-3 w-3" />
-      </button>
-    </span>
-  );
-}
+// Hidden Input import keeps tree-shake happy if reused elsewhere
+void Input;
