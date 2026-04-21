@@ -56,9 +56,9 @@ function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="mx-auto min-h-screen max-w-6xl bg-background pb-24">
       {/* Top header */}
-      <header className="px-4 pt-6">
+      <header className="px-4 pt-5 sm:pt-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <Logo size={36} />
@@ -78,7 +78,7 @@ function Home() {
           </button>
         </div>
 
-        <h1 className="mt-5 font-display text-2xl font-extrabold leading-tight">
+        <h1 className="mt-4 font-display text-xl font-extrabold leading-tight sm:mt-5 sm:text-2xl">
           Find your <span className="text-primary">perfect cup</span>
           <br />
           of chai today.
