@@ -64,7 +64,7 @@ function Explore() {
   }, [shops, search, sort, minRating, priceRange, moodTag]);
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="mx-auto min-h-screen max-w-6xl bg-background pb-24">
       <header className="sticky top-0 z-30 glass border-b border-border/60">
         <div className="px-4 py-3">
           <h1 className="font-display text-lg font-extrabold">Explore</h1>
@@ -151,8 +151,8 @@ function Explore() {
 
       <main className="px-4 py-4">
         {shops === null ? (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {Array.from({ length: 6 }).map((_, i) => (
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, i) => (
               <ShopCardSkeleton key={i} />
             ))}
           </div>
@@ -163,7 +163,7 @@ function Explore() {
             <p className="mt-1 text-sm text-muted-foreground">Try clearing some filters.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
             {filtered.map((s, i) => (
               <ShopCard key={s.id} shop={s} index={i} />
             ))}
