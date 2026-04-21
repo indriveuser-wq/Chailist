@@ -14,7 +14,7 @@ export function ShopCard({ shop, index = 0 }: { shop: ShopWithStats; index?: num
       style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
     >
       <article className="overflow-hidden rounded-2xl border border-border/60 bg-card shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)]">
-        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+        <div className="relative aspect-[4/3] overflow-hidden bg-muted md:aspect-[5/4]">
           {shop.image_url ? (
             <img
               src={shop.image_url}
@@ -50,19 +50,19 @@ export function ShopCard({ shop, index = 0 }: { shop: ShopWithStats; index?: num
           </div>
         </div>
 
-        <div className="space-y-1.5 p-3">
+        <div className="space-y-1 p-2.5 md:space-y-1.5 md:p-3">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="line-clamp-1 font-display text-base font-bold">{shop.name}</h3>
-            <span className="shrink-0 rounded-md bg-secondary px-1.5 py-0.5 text-[11px] font-semibold text-secondary-foreground">
+            <h3 className="line-clamp-1 font-display text-sm font-bold md:text-base">{shop.name}</h3>
+            <span className="shrink-0 rounded-md bg-secondary px-1.5 py-0.5 text-[10px] font-semibold text-secondary-foreground md:text-[11px]">
               {PRICE_LABEL[shop.price_range] ?? "₹₹"}
             </span>
           </div>
-          <p className="flex items-center gap-1 text-xs text-muted-foreground">
+          <p className="flex items-center gap-1 text-[11px] text-muted-foreground md:text-xs">
             <MapPin className="h-3 w-3 shrink-0" />
             <span className="line-clamp-1">{shop.location}</span>
           </p>
           <div className="flex flex-wrap items-center gap-1 pt-0.5">
-            {shop.tags.slice(0, 3).map((t) => (
+            {shop.tags.slice(0, 2).map((t) => (
               <span
                 key={t}
                 className="rounded-full bg-secondary/70 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-secondary-foreground"
@@ -70,7 +70,7 @@ export function ShopCard({ shop, index = 0 }: { shop: ShopWithStats; index?: num
                 {t}
               </span>
             ))}
-            <span className="ml-auto text-[11px] font-semibold text-foreground/80">
+            <span className="ml-auto text-[10px] font-semibold text-foreground/80 md:text-[11px]">
               from ₹{Number(shop.starting_price).toFixed(0)}
             </span>
           </div>
