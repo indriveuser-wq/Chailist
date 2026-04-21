@@ -1,21 +1,21 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { fetchShop, type ShopWithStats } from "@/lib/queries";
+import { fetchShop, fetchShopImages, fetchTeasWithStats, type ShopWithStats, type TeaWithStats } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { StarRating } from "@/components/StarRating";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { MapPin, BadgeCheck, ArrowLeft, Star, MessageSquare } from "lucide-react";
+import { MapPin, BadgeCheck, ArrowLeft, Star, MessageSquare, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { BottomNav } from "@/components/BottomNav";
+import { TeaRow } from "@/components/TeaRatingPopover";
 
 export const Route = createFileRoute("/shops/$shopId")({
   component: ShopDetail,
 });
 
-type Tea = { id: string; name: string; price: number };
 type Review = {
   id: string;
   rating: number;
@@ -31,7 +31,9 @@ function ShopDetail() {
   const { shopId } = useParams({ from: "/shops/$shopId" });
   const { user } = useAuth();
   const [shop, setShop] = useState<ShopWithStats | null>(null);
-  const [teas, setTeas] = useState<Tea[]>([]);
+  const [teas, setTeas] = useState<TeaWithStats[]>([]);
+  const [gallery, setGallery] = useState<string[]>([]);
+  const [activeImg, setActiveImg] = useState(0);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [myRating, setMyRating] = useState<number>(0);
   const [myText, setMyText] = useState("");
@@ -44,8 +46,14 @@ function ShopDetail() {
   async function reload() {
     const s = await fetchShop(shopId);
     setShop(s);
-    const { data: t } = await supabase.from("tea_items").select("*").eq("shop_id", shopId);
-    setTeas((t ?? []) as Tea[]);
+    const [t, imgs] = await Promise.all([
+      fetchTeasWithStats(shopId),
+      fetchShopImages(shopId),
+    ]);
+    setTeas(t);
+    // Combine main image with gallery, dedupe.
+    const combined = [s?.image_url, ...imgs].filter(Boolean) as string[];
+    setGallery(Array.from(new Set(combined)));
     const { data: r } = await supabase
       .from("ratings")
       .select("id, rating, review_text, created_at, user_id, profiles(display_name, avatar_url)")
