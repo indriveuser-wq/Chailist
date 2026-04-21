@@ -152,9 +152,9 @@ function ShopDetail() {
 
       {/* Hero with parallax */}
       <div ref={heroRef} className="relative h-[55vh] min-h-[320px] overflow-hidden">
-        {shop.image_url ? (
+        {gallery[activeImg] ? (
           <img
-            src={shop.image_url}
+            src={gallery[activeImg]}
             alt={shop.name}
             className="h-[120%] w-full object-cover"
             style={{ transform: `translateY(${Math.min(scrollY * 0.35, 120)}px) scale(1.05)` }}
@@ -172,8 +172,37 @@ function ShopDetail() {
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
-          <FavoriteButton shopId={shop.id} className="h-10 w-10" />
+          <div className="flex items-center gap-2">
+            {user && shop.owner_id === user.id && (
+              <Link
+                to="/shops/$shopId/edit"
+                params={{ shopId: shop.id }}
+                className="tap-shrink flex h-10 w-10 items-center justify-center rounded-full bg-background/85 backdrop-blur shadow-[var(--shadow-soft)]"
+                aria-label="Edit shop"
+              >
+                <Pencil className="h-4 w-4" />
+              </Link>
+            )}
+            <FavoriteButton shopId={shop.id} className="h-10 w-10" />
+          </div>
         </div>
+
+        {/* Image dots */}
+        {gallery.length > 1 && (
+          <div className="absolute inset-x-0 bottom-28 z-10 flex justify-center gap-1.5">
+            {gallery.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                aria-label={`Image ${i + 1}`}
+                onClick={() => setActiveImg(i)}
+                className={`h-1.5 rounded-full transition-all ${
+                  i === activeImg ? "w-6 bg-white" : "w-1.5 bg-white/60"
+                }`}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Floating title card */}
         <div className="absolute inset-x-4 bottom-6 animate-fade-up rounded-2xl bg-card/95 p-4 shadow-[var(--shadow-elevated)] backdrop-blur">
@@ -228,13 +257,15 @@ function ShopDetail() {
           ) : (
             <ul className="divide-y divide-border rounded-2xl border border-border bg-card shadow-[var(--shadow-soft)]">
               {teas.map((t) => (
-                <li
+                <TeaRow
                   key={t.id}
-                  className="flex items-center justify-between px-4 py-3 text-sm transition-colors hover:bg-secondary/50"
-                >
-                  <span className="font-medium">{t.name}</span>
-                  <span className="font-bold text-primary">₹{Number(t.price).toFixed(0)}</span>
-                </li>
+                  teaId={t.id}
+                  name={t.name}
+                  price={t.price}
+                  avg={t.avg_rating}
+                  count={t.rating_count}
+                  onRated={reload}
+                />
               ))}
             </ul>
           )}
