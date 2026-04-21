@@ -8,6 +8,7 @@ import { Logo, Wordmark } from "@/components/Logo";
 import { useAuth } from "@/lib/auth";
 import { Search, ChevronRight, Sparkles, Bell } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { HeroSlider } from "@/components/HeroSlider";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -83,6 +84,11 @@ function Home() {
           <br />
           of chai today.
         </h1>
+
+        {/* Engaging hero slides */}
+        <div className="mt-4 sm:mt-5">
+          <HeroSlider />
+        </div>
 
         {/* Search */}
         <Link
