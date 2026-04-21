@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { BottomNav } from "@/components/BottomNav";
 import { TeaRow } from "@/components/TeaRatingPopover";
+import { ShopGallery } from "@/components/ShopGallery";
 
 export const Route = createFileRoute("/shops/$shopId")({
   component: ShopDetail,
@@ -151,28 +152,25 @@ function ShopDetail() {
       </header>
 
       {/* Hero with parallax */}
-      <div ref={heroRef} className="relative h-[55vh] min-h-[320px] overflow-hidden">
-        {gallery[activeImg] ? (
-          <img
-            src={gallery[activeImg]}
-            alt={shop.name}
-            className="h-[120%] w-full object-cover"
-            style={{ transform: `translateY(${Math.min(scrollY * 0.35, 120)}px) scale(1.05)` }}
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-[var(--gradient-warm)] text-7xl">🍵</div>
-        )}
+      <div ref={heroRef} className="relative h-[48vh] min-h-[300px] overflow-hidden md:h-[44vh] md:min-h-[360px]">
+        <ShopGallery
+          images={gallery}
+          alt={shop.name}
+          active={activeImg}
+          onChange={setActiveImg}
+          scrollY={scrollY}
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-background" />
 
         {/* Top controls */}
-        <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-4 pt-4">
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between px-4 pt-4">
           <Link
             to="/"
-            className="tap-shrink flex h-10 w-10 items-center justify-center rounded-full bg-background/85 backdrop-blur shadow-[var(--shadow-soft)]"
+            className="tap-shrink pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-background/85 backdrop-blur shadow-[var(--shadow-soft)]"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="pointer-events-auto flex items-center gap-2">
             {user && shop.owner_id === user.id && (
               <Link
                 to="/shops/$shopId/edit"
@@ -189,14 +187,14 @@ function ShopDetail() {
 
         {/* Image dots */}
         {gallery.length > 1 && (
-          <div className="absolute inset-x-0 bottom-28 z-10 flex justify-center gap-1.5">
+          <div className="pointer-events-none absolute inset-x-0 bottom-28 z-20 flex justify-center gap-1.5">
             {gallery.map((_, i) => (
               <button
                 key={i}
                 type="button"
                 aria-label={`Image ${i + 1}`}
                 onClick={() => setActiveImg(i)}
-                className={`h-1.5 rounded-full transition-all ${
+                className={`pointer-events-auto h-1.5 rounded-full transition-all ${
                   i === activeImg ? "w-6 bg-white" : "w-1.5 bg-white/60"
                 }`}
               />
@@ -205,12 +203,12 @@ function ShopDetail() {
         )}
 
         {/* Floating title card */}
-        <div className="absolute inset-x-4 bottom-6 animate-fade-up rounded-2xl bg-card/95 p-4 shadow-[var(--shadow-elevated)] backdrop-blur">
+        <div className="pointer-events-none absolute inset-x-3 bottom-4 z-20 animate-fade-up rounded-2xl bg-card/95 p-3.5 shadow-[var(--shadow-elevated)] backdrop-blur sm:inset-x-4 sm:bottom-6 sm:p-4">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <h1 className="font-display text-xl font-extrabold leading-tight">
+              <h1 className="font-display text-lg font-extrabold leading-tight sm:text-xl">
                 {shop.name}
-                {shop.verified && <BadgeCheck className="ml-1 inline h-5 w-5 text-primary" />}
+                {shop.verified && <BadgeCheck className="ml-1 inline h-4 w-4 text-primary sm:h-5 sm:w-5" />}
               </h1>
               <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
                 <MapPin className="h-3 w-3" /> {shop.location}
