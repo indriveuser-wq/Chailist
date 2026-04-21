@@ -160,8 +160,8 @@ function Home() {
           </Link>
         </div>
         {shops === null ? (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {Array.from({ length: 4 }).map((_, i) => (
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, i) => (
               <ShopCardSkeleton key={i} />
             ))}
           </div>
@@ -172,8 +172,8 @@ function Home() {
             <p className="mt-1 text-sm text-muted-foreground">Try another vibe above.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {filtered.slice(0, 6).map((s, i) => (
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+            {filtered.slice(0, 8).map((s, i) => (
               <ShopCard key={s.id} shop={s} index={i} />
             ))}
           </div>
