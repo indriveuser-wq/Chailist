@@ -122,6 +122,45 @@ export type Database = {
           },
         ]
       }
+      shop_images: {
+        Row: {
+          created_at: string
+          id: string
+          shop_id: string
+          sort_order: number
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          shop_id: string
+          sort_order?: number
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          shop_id?: string
+          sort_order?: number
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_images_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shop_stats"
+            referencedColumns: ["shop_id"]
+          },
+          {
+            foreignKeyName: "shop_images_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shops: {
         Row: {
           approved: boolean
@@ -209,6 +248,48 @@ export type Database = {
           },
         ]
       }
+      tea_ratings: {
+        Row: {
+          created_at: string
+          id: string
+          note: string | null
+          rating: number
+          tea_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          rating: number
+          tea_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          rating?: number
+          tea_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tea_ratings_tea_id_fkey"
+            columns: ["tea_id"]
+            isOneToOne: false
+            referencedRelation: "tea_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tea_ratings_tea_id_fkey"
+            columns: ["tea_id"]
+            isOneToOne: false
+            referencedRelation: "tea_stats"
+            referencedColumns: ["tea_id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
@@ -234,6 +315,14 @@ export type Database = {
           avg_rating: number | null
           rating_count: number | null
           shop_id: string | null
+        }
+        Relationships: []
+      }
+      tea_stats: {
+        Row: {
+          avg_rating: number | null
+          rating_count: number | null
+          tea_id: string | null
         }
         Relationships: []
       }

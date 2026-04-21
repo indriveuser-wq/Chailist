@@ -2,6 +2,7 @@ import { Outlet, createRootRoute, HeadContent, Scripts } from "@tanstack/react-r
 import appCss from "../styles.css?url";
 import { AuthProvider } from "@/lib/auth";
 import { Toaster } from "@/components/ui/sonner";
+import { PageTransition } from "@/components/PageTransition";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -31,7 +32,9 @@ export const Route = createRootRoute({
   shellComponent: RootShell,
   component: () => (
     <AuthProvider>
-      <Outlet />
+      <PageTransition>
+        <Outlet />
+      </PageTransition>
       <Toaster richColors position="top-center" />
     </AuthProvider>
   ),

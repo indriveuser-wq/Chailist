@@ -15,6 +15,7 @@ import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopsNewRouteImport } from './routes/shops.new'
 import { Route as ShopsShopIdRouteImport } from './routes/shops.$shopId'
+import { Route as ShopsShopIdEditRouteImport } from './routes/shops.$shopId.edit'
 
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
@@ -46,22 +47,29 @@ const ShopsShopIdRoute = ShopsShopIdRouteImport.update({
   path: '/shops/$shopId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShopsShopIdEditRoute = ShopsShopIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => ShopsShopIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
-  '/shops/$shopId': typeof ShopsShopIdRoute
+  '/shops/$shopId': typeof ShopsShopIdRouteWithChildren
   '/shops/new': typeof ShopsNewRoute
+  '/shops/$shopId/edit': typeof ShopsShopIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
-  '/shops/$shopId': typeof ShopsShopIdRoute
+  '/shops/$shopId': typeof ShopsShopIdRouteWithChildren
   '/shops/new': typeof ShopsNewRoute
+  '/shops/$shopId/edit': typeof ShopsShopIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -69,8 +77,9 @@ export interface FileRoutesById {
   '/explore': typeof ExploreRoute
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
-  '/shops/$shopId': typeof ShopsShopIdRoute
+  '/shops/$shopId': typeof ShopsShopIdRouteWithChildren
   '/shops/new': typeof ShopsNewRoute
+  '/shops/$shopId/edit': typeof ShopsShopIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,8 +90,16 @@ export interface FileRouteTypes {
     | '/profile'
     | '/shops/$shopId'
     | '/shops/new'
+    | '/shops/$shopId/edit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/explore' | '/login' | '/profile' | '/shops/$shopId' | '/shops/new'
+  to:
+    | '/'
+    | '/explore'
+    | '/login'
+    | '/profile'
+    | '/shops/$shopId'
+    | '/shops/new'
+    | '/shops/$shopId/edit'
   id:
     | '__root__'
     | '/'
@@ -91,6 +108,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/shops/$shopId'
     | '/shops/new'
+    | '/shops/$shopId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -98,7 +116,7 @@ export interface RootRouteChildren {
   ExploreRoute: typeof ExploreRoute
   LoginRoute: typeof LoginRoute
   ProfileRoute: typeof ProfileRoute
-  ShopsShopIdRoute: typeof ShopsShopIdRoute
+  ShopsShopIdRoute: typeof ShopsShopIdRouteWithChildren
   ShopsNewRoute: typeof ShopsNewRoute
 }
 
@@ -146,15 +164,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopsShopIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shops/$shopId/edit': {
+      id: '/shops/$shopId/edit'
+      path: '/edit'
+      fullPath: '/shops/$shopId/edit'
+      preLoaderRoute: typeof ShopsShopIdEditRouteImport
+      parentRoute: typeof ShopsShopIdRoute
+    }
   }
 }
+
+interface ShopsShopIdRouteChildren {
+  ShopsShopIdEditRoute: typeof ShopsShopIdEditRoute
+}
+
+const ShopsShopIdRouteChildren: ShopsShopIdRouteChildren = {
+  ShopsShopIdEditRoute: ShopsShopIdEditRoute,
+}
+
+const ShopsShopIdRouteWithChildren = ShopsShopIdRoute._addFileChildren(
+  ShopsShopIdRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExploreRoute: ExploreRoute,
   LoginRoute: LoginRoute,
   ProfileRoute: ProfileRoute,
-  ShopsShopIdRoute: ShopsShopIdRoute,
+  ShopsShopIdRoute: ShopsShopIdRouteWithChildren,
   ShopsNewRoute: ShopsNewRoute,
 }
 export const routeTree = rootRouteImport
