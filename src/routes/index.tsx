@@ -56,9 +56,9 @@ function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="mx-auto min-h-screen max-w-6xl bg-background pb-24">
       {/* Top header */}
-      <header className="px-4 pt-6">
+      <header className="px-4 pt-5 sm:pt-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <Logo size={36} />
@@ -78,7 +78,7 @@ function Home() {
           </button>
         </div>
 
-        <h1 className="mt-5 font-display text-2xl font-extrabold leading-tight">
+        <h1 className="mt-4 font-display text-xl font-extrabold leading-tight sm:mt-5 sm:text-2xl">
           Find your <span className="text-primary">perfect cup</span>
           <br />
           of chai today.
@@ -160,8 +160,8 @@ function Home() {
           </Link>
         </div>
         {shops === null ? (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {Array.from({ length: 4 }).map((_, i) => (
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, i) => (
               <ShopCardSkeleton key={i} />
             ))}
           </div>
@@ -172,8 +172,8 @@ function Home() {
             <p className="mt-1 text-sm text-muted-foreground">Try another vibe above.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {filtered.slice(0, 6).map((s, i) => (
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+            {filtered.slice(0, 8).map((s, i) => (
               <ShopCard key={s.id} shop={s} index={i} />
             ))}
           </div>
