@@ -52,55 +52,16 @@ function Home() {
     [shops],
   );
 
-  const greeting = useMemo(() => {
+  // Avoid SSR/CSR hydration mismatch — compute time-based greeting on client only.
+  const [greeting, setGreeting] = useState("Welcome");
+  useEffect(() => {
     const h = new Date().getHours();
-    if (h < 12) return "Good morning";
-    if (h < 17) return "Good afternoon";
-    return "Good evening";
+    setGreeting(h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening");
   }, []);
 
   return (
     <div className="mx-auto min-h-screen max-w-6xl bg-background pb-24">
-      {/* ────── DESKTOP TOP BAR (Blinkit-inspired) ────── */}
-      <header className="hidden md:block sticky top-0 z-30 border-b border-border/60 bg-background/85 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center gap-6 px-6 py-3">
-          <Link to="/" className="flex items-center gap-2">
-            <Logo size={36} />
-            <Wordmark />
-          </Link>
-          <div className="flex items-center gap-2 border-l border-border pl-6">
-            <MapPin className="h-4 w-4 text-primary" />
-            <div className="leading-tight">
-              <p className="text-[11px] font-bold">Delivering near you</p>
-              <p className="text-xs text-muted-foreground">Tap to set location ▾</p>
-            </div>
-          </div>
-          <Link
-            to="/explore"
-            className="ml-2 flex flex-1 items-center gap-3 rounded-xl bg-secondary px-4 py-2.5 text-sm text-muted-foreground transition hover:bg-secondary/70"
-          >
-            <Search className="h-4 w-4" />
-            <span>Search "masala chai", shops, locations…</span>
-          </Link>
-          {user ? (
-            <Link to="/profile" className="text-sm font-semibold hover:text-primary">
-              Profile
-            </Link>
-          ) : (
-            <Link to="/login" className="text-sm font-semibold hover:text-primary">
-              Login
-            </Link>
-          )}
-          <Link
-            to="/shops/new"
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-soft)]"
-          >
-            <ShoppingBag className="h-4 w-4" /> Add shop
-          </Link>
-        </div>
-      </header>
-
-      {/* ────── MOBILE TOP HEADER (existing) ────── */}
+      {/* ────── MOBILE TOP HEADER ────── */}
       <header className="px-4 pt-5 sm:pt-6 md:hidden">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
