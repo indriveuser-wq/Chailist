@@ -89,7 +89,7 @@ function Home() {
         </h1>
 
         {/* Engaging hero slides */}
-        <div className="mt-4 sm:mt-5">
+        <div className="mt-4 aspect-[16/9] w-full sm:mt-5 sm:aspect-[21/9]">
           <HeroSlider />
         </div>
 
