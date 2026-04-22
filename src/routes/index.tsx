@@ -105,25 +105,28 @@ function Home() {
 
       {/* ────── DESKTOP HERO + PROMO TILES ────── */}
       <section className="hidden md:block px-6 pt-6">
-        <div className="overflow-hidden rounded-3xl bg-[var(--gradient-hero)] shadow-[var(--shadow-elevated)]">
-          <div className="grid grid-cols-2 items-center gap-6 p-8">
-            <div className="text-primary-foreground">
-              <h2 className="font-display text-4xl font-extrabold leading-tight lg:text-5xl">
-                Stock up on the<br />coziest cups of chai
-              </h2>
-              <p className="mt-3 max-w-md text-base opacity-90">
-                Discover farm-fresh tea, iconic street stalls and warm cafés near you — rated by real chai lovers.
-              </p>
-              <Link
-                to="/explore"
-                className="tap-shrink mt-5 inline-flex items-center gap-1.5 rounded-xl bg-background px-5 py-3 text-sm font-bold text-foreground shadow-[var(--shadow-soft)]"
-              >
-                Explore shops <ChevronRight className="h-4 w-4" />
-              </Link>
-            </div>
-            <div className="relative h-56 lg:h-64">
-              <HeroSlider />
-            </div>
+        <div className="relative overflow-hidden rounded-3xl bg-[var(--gradient-hero)] shadow-[var(--shadow-elevated)] h-[360px] lg:h-[440px]">
+          {/* Full-bleed background slideshow */}
+          <div className="absolute inset-0">
+            <HeroSlider />
+          </div>
+          {/* Readability overlay over the slideshow */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/65 via-black/35 to-transparent" />
+
+          {/* Foreground copy */}
+          <div className="relative z-10 flex h-full max-w-2xl flex-col justify-center gap-4 p-10 lg:p-14 text-white">
+            <h2 className="font-display text-4xl font-extrabold leading-tight drop-shadow-lg lg:text-6xl">
+              Stock up on the<br />coziest cups of chai
+            </h2>
+            <p className="max-w-lg text-base opacity-95 drop-shadow lg:text-lg">
+              Discover farm-fresh tea, iconic street stalls and warm cafés near you — rated by real chai lovers.
+            </p>
+            <Link
+              to="/explore"
+              className="tap-shrink mt-2 inline-flex w-fit items-center gap-1.5 rounded-xl bg-background px-5 py-3 text-sm font-bold text-foreground shadow-[var(--shadow-soft)] hover:opacity-95"
+            >
+              Explore shops <ChevronRight className="h-4 w-4" />
+            </Link>
           </div>
         </div>
 
