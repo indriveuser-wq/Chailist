@@ -37,7 +37,7 @@ export function HeroSlider() {
 
   return (
     <div
-      className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl bg-muted shadow-[var(--shadow-elevated)] sm:aspect-[21/9]"
+      className="relative h-full w-full overflow-hidden rounded-3xl bg-muted shadow-[var(--shadow-elevated)]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={() => setPaused(true)}
