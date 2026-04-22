@@ -214,9 +214,12 @@ function Profile() {
 
 function Stat({ label, value, icon }: { label: string; value: number; icon: React.ReactNode }) {
   return (
-    <div className="rounded-2xl bg-white/10 px-3 py-2.5 backdrop-blur">
-      <div className="flex items-center gap-1.5 text-[11px] uppercase opacity-80">{icon}{label}</div>
-      <div className="mt-0.5 font-display text-xl font-extrabold">{value}</div>
+    <div className="rounded-2xl bg-white/15 px-3 py-2 backdrop-blur ring-1 ring-white/10">
+      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide opacity-90">
+        {icon}
+        {label}
+      </div>
+      <div className="mt-0.5 font-display text-lg font-extrabold leading-tight md:text-xl">{value}</div>
     </div>
   );
 }
