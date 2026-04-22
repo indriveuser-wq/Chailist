@@ -8,7 +8,7 @@ import type { ShopWithStats } from "@/lib/queries";
 import { fetchShops } from "@/lib/queries";
 import { Logo, Wordmark } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
-import { Heart, LogOut, Store, Star } from "lucide-react";
+import { Heart, LogOut, Store, Star, Plus, Pencil } from "lucide-react";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
 
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/profile")({
 });
 
 function Profile() {
-  const { user, isOwner, signOut, loading } = useAuth();
+  const { user, signOut, loading } = useAuth();
   const nav = useNavigate();
   const [favorites, setFavorites] = useState<ShopWithStats[] | null>(null);
   const [myShops, setMyShops] = useState<ShopWithStats[] | null>(null);
@@ -38,9 +38,8 @@ function Profile() {
         setFavorites(all.filter((s) => ids.includes(s.id)));
       } else setFavorites([]);
 
-      if (isOwner) {
-        fetchShops({ ownerId: user.id }).then(setMyShops);
-      } else setMyShops([]);
+      // Always check for owned shops (RLS lets owner see their own).
+      fetchShops({ ownerId: user.id }).then(setMyShops).catch(() => setMyShops([]));
 
       const { count } = await supabase
         .from("ratings")
@@ -55,7 +54,7 @@ function Profile() {
         .maybeSingle();
       setProfile(prof);
     })();
-  }, [user, isOwner]);
+  }, [user]);
 
   if (loading) return null;
 
