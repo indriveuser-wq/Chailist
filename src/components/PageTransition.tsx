@@ -2,6 +2,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
+// AnimatePresence is still used by SlideDownModal below.
+
 /**
  * Wraps page content with directional slide transitions.
  * - Forward into a shop detail / nested route → slide-in from right
