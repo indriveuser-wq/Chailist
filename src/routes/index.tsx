@@ -61,8 +61,47 @@ function Home() {
 
   return (
     <div className="mx-auto min-h-screen max-w-6xl bg-background pb-24">
-      {/* Top header */}
-      <header className="px-4 pt-5 sm:pt-6">
+      {/* ────── DESKTOP TOP BAR (Blinkit-inspired) ────── */}
+      <header className="hidden md:block sticky top-0 z-30 border-b border-border/60 bg-background/85 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center gap-6 px-6 py-3">
+          <Link to="/" className="flex items-center gap-2">
+            <Logo size={36} />
+            <Wordmark />
+          </Link>
+          <div className="flex items-center gap-2 border-l border-border pl-6">
+            <MapPin className="h-4 w-4 text-primary" />
+            <div className="leading-tight">
+              <p className="text-[11px] font-bold">Delivering near you</p>
+              <p className="text-xs text-muted-foreground">Tap to set location ▾</p>
+            </div>
+          </div>
+          <Link
+            to="/explore"
+            className="ml-2 flex flex-1 items-center gap-3 rounded-xl bg-secondary px-4 py-2.5 text-sm text-muted-foreground transition hover:bg-secondary/70"
+          >
+            <Search className="h-4 w-4" />
+            <span>Search "masala chai", shops, locations…</span>
+          </Link>
+          {user ? (
+            <Link to="/profile" className="text-sm font-semibold hover:text-primary">
+              Profile
+            </Link>
+          ) : (
+            <Link to="/login" className="text-sm font-semibold hover:text-primary">
+              Login
+            </Link>
+          )}
+          <Link
+            to="/shops/new"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-soft)]"
+          >
+            <ShoppingBag className="h-4 w-4" /> Add shop
+          </Link>
+        </div>
+      </header>
+
+      {/* ────── MOBILE TOP HEADER (existing) ────── */}
+      <header className="px-4 pt-5 sm:pt-6 md:hidden">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <Logo size={36} />
@@ -103,8 +142,81 @@ function Home() {
         </Link>
       </header>
 
+      {/* ────── DESKTOP HERO + PROMO TILES ────── */}
+      <section className="hidden md:block px-6 pt-6">
+        <div className="overflow-hidden rounded-3xl bg-[var(--gradient-hero)] shadow-[var(--shadow-elevated)]">
+          <div className="grid grid-cols-2 items-center gap-6 p-8">
+            <div className="text-primary-foreground">
+              <h2 className="font-display text-4xl font-extrabold leading-tight lg:text-5xl">
+                Stock up on the<br />coziest cups of chai
+              </h2>
+              <p className="mt-3 max-w-md text-base opacity-90">
+                Discover farm-fresh tea, iconic street stalls and warm cafés near you — rated by real chai lovers.
+              </p>
+              <Link
+                to="/explore"
+                className="tap-shrink mt-5 inline-flex items-center gap-1.5 rounded-xl bg-background px-5 py-3 text-sm font-bold text-foreground shadow-[var(--shadow-soft)]"
+              >
+                Explore shops <ChevronRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <div className="relative h-56 lg:h-64">
+              <HeroSlider />
+            </div>
+          </div>
+        </div>
+
+        {/* Promo tiles row (Blinkit-style) */}
+        <div className="mt-5 grid grid-cols-3 gap-4">
+          {[
+            {
+              title: "Iconic chai stalls",
+              sub: "Street favorites near you",
+              cta: "Browse",
+              img: slideStall,
+              bg: "from-[#2F5D50] to-[#1f3f37]",
+            },
+            {
+              title: "Cozy tea cafés",
+              sub: "Warm corners to unwind",
+              cta: "Visit",
+              img: slideCafe,
+              bg: "from-[#C89B3C] to-[#8a6a23]",
+            },
+            {
+              title: "Tea with a view",
+              sub: "Scenic escapes for tea lovers",
+              cta: "Discover",
+              img: slideScenic,
+              bg: "from-[#6B4F3A] to-[#3f2d20]",
+            },
+          ].map((t) => (
+            <Link
+              to="/explore"
+              key={t.title}
+              className={`tap-shrink relative flex h-44 overflow-hidden rounded-2xl bg-gradient-to-br ${t.bg} p-5 shadow-[var(--shadow-card)] transition hover:shadow-[var(--shadow-elevated)]`}
+            >
+              <div className="relative z-10 flex max-w-[55%] flex-col text-white">
+                <h3 className="font-display text-lg font-extrabold leading-tight">{t.title}</h3>
+                <p className="mt-1 text-xs opacity-90">{t.sub}</p>
+                <span className="mt-auto inline-flex w-fit items-center rounded-md bg-white px-3 py-1.5 text-xs font-bold text-foreground">
+                  {t.cta}
+                </span>
+              </div>
+              <img
+                src={t.img}
+                alt=""
+                className="absolute right-0 top-0 h-full w-2/5 object-cover opacity-90"
+                loading="lazy"
+              />
+              <div className="absolute inset-y-0 left-1/2 w-24 bg-gradient-to-r from-transparent to-black/0" />
+            </Link>
+          ))}
+        </div>
+      </section>
+
       {/* Mood categories */}
-      <section className="mt-6 px-4">
+      <section className="mt-6 px-4 md:px-6">
         <div className="mb-3 flex items-end justify-between">
           <h2 className="font-display text-lg font-bold">Tea moods</h2>
           <span className="text-xs text-muted-foreground">Pick a vibe</span>
