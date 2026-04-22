@@ -6,7 +6,7 @@ import { MoodChips, MOODS } from "@/components/MoodChips";
 import { fetchShops, type ShopWithStats } from "@/lib/queries";
 import { Logo, Wordmark } from "@/components/Logo";
 import { useAuth } from "@/lib/auth";
-import { Search, ChevronRight, Sparkles, Bell, MapPin, ShoppingBag, User as UserIcon } from "lucide-react";
+import { Search, ChevronRight, Sparkles, Bell, MapPin, ShoppingBag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { HeroSlider } from "@/components/HeroSlider";
 import slideStall from "@/assets/slide-stall.jpg";
