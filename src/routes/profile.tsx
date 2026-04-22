@@ -182,7 +182,7 @@ function Profile() {
                   <Link
                     to="/shops/$shopId/edit"
                     params={{ shopId: s.id }}
-                    className="absolute right-2 top-2 z-10 inline-flex items-center gap-1 rounded-full bg-background/95 px-2 py-1 text-[10px] font-semibold text-foreground shadow-[var(--shadow-soft)] backdrop-blur tap-shrink"
+                    className="absolute left-2 top-2 z-10 inline-flex items-center gap-1 rounded-full bg-primary px-2 py-1 text-[10px] font-semibold text-primary-foreground shadow-[var(--shadow-soft)] backdrop-blur tap-shrink"
                     aria-label="Edit shop"
                   >
                     <Pencil className="h-3 w-3" /> Edit
