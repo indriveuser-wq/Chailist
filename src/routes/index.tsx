@@ -227,13 +227,13 @@ function Home() {
       {/* Top rated horizontal */}
       {topRated.length > 0 && (
         <section className="mt-6">
-          <div className="mb-3 flex items-end justify-between px-4">
+          <div className="mb-3 flex items-end justify-between px-4 md:px-6">
             <h2 className="flex items-center gap-1.5 font-display text-lg font-bold">
               <Sparkles className="h-4 w-4 text-accent" />
               Top rated near you
             </h2>
           </div>
-          <div className="no-scrollbar -mr-4 overflow-x-auto pl-4 pr-4">
+          <div className="no-scrollbar -mr-4 overflow-x-auto pl-4 pr-4 md:-mr-6 md:pl-6 md:pr-6">
             <div className="flex gap-3">
               {topRated.map((s, i) => (
                 <Link
@@ -271,7 +271,7 @@ function Home() {
       )}
 
       {/* All shops */}
-      <section className="mt-6 px-4">
+      <section className="mt-6 px-4 md:px-6">
         <div className="mb-3 flex items-end justify-between">
           <h2 className="font-display text-lg font-bold">
             {moodTag ? `${MOODS.find((m) => m.id === mood)?.label} spots` : "All tea shops"}
@@ -303,7 +303,7 @@ function Home() {
 
       {/* sign-in CTA */}
       {!user && (
-        <section className="mt-8 px-4">
+        <section className="mt-8 px-4 md:px-6">
           <div className="overflow-hidden rounded-2xl bg-[var(--gradient-hero)] p-5 text-primary-foreground shadow-[var(--shadow-elevated)]">
             <h3 className="font-display text-lg font-bold">Save your favorites</h3>
             <p className="mt-1 text-sm opacity-90">Sign in to rate shops and build your tea map.</p>
