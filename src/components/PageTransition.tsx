@@ -2,6 +2,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
+// AnimatePresence is still used by SlideDownModal below.
+
 /**
  * Wraps page content with directional slide transitions.
  * - Forward into a shop detail / nested route → slide-in from right
@@ -12,21 +14,17 @@ export function PageTransition({ children }: { children: ReactNode }) {
   const location = useRouterState({ select: (s) => s.location });
   const key = location.pathname;
 
-  // Decide direction based on path depth.
-  const depth = key.split("/").filter(Boolean).length;
-
+  // Subtle fade-in only — never unmount the previous tree (keeps scroll,
+  // form state, and avoids the "page refresh" blank flash between routes).
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={key}
-        initial={{ opacity: 0, x: depth > 1 ? 24 : 0, y: depth <= 1 ? 8 : 0 }}
-        animate={{ opacity: 1, x: 0, y: 0 }}
-        exit={{ opacity: 0, x: depth > 1 ? -16 : 0, y: depth <= 1 ? -4 : 0 }}
-        transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    <motion.div
+      key={key}
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
+    >
+      {children}
+    </motion.div>
   );
 }
 
