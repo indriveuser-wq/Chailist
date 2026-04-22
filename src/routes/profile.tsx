@@ -8,7 +8,7 @@ import type { ShopWithStats } from "@/lib/queries";
 import { fetchShops } from "@/lib/queries";
 import { Logo, Wordmark } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
-import { Heart, LogOut, Store, Star } from "lucide-react";
+import { Heart, LogOut, Store, Star, Plus, Pencil } from "lucide-react";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
 
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/profile")({
 });
 
 function Profile() {
-  const { user, isOwner, signOut, loading } = useAuth();
+  const { user, signOut, loading } = useAuth();
   const nav = useNavigate();
   const [favorites, setFavorites] = useState<ShopWithStats[] | null>(null);
   const [myShops, setMyShops] = useState<ShopWithStats[] | null>(null);
@@ -38,9 +38,8 @@ function Profile() {
         setFavorites(all.filter((s) => ids.includes(s.id)));
       } else setFavorites([]);
 
-      if (isOwner) {
-        fetchShops({ ownerId: user.id }).then(setMyShops);
-      } else setMyShops([]);
+      // Always check for owned shops (RLS lets owner see their own).
+      fetchShops({ ownerId: user.id }).then(setMyShops).catch(() => setMyShops([]));
 
       const { count } = await supabase
         .from("ratings")
@@ -55,7 +54,7 @@ function Profile() {
         .maybeSingle();
       setProfile(prof);
     })();
-  }, [user, isOwner]);
+  }, [user]);
 
   if (loading) return null;
 
@@ -98,79 +97,114 @@ function Profile() {
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Hero header */}
-      <div className="relative overflow-hidden bg-[var(--gradient-hero)] px-4 pb-8 pt-10 text-primary-foreground">
-        <div className="flex items-center gap-3">
+      <div className="relative overflow-hidden bg-[var(--gradient-hero)] px-4 pb-7 pt-10 text-primary-foreground md:rounded-b-3xl">
+        <div className="mx-auto flex max-w-5xl items-center gap-3">
           {profile?.avatar_url ? (
             <img
               src={profile.avatar_url}
               alt={name}
-              className="h-16 w-16 rounded-full object-cover ring-4 ring-white/20"
+              className="h-14 w-14 rounded-full object-cover ring-4 ring-white/20 md:h-16 md:w-16"
             />
           ) : (
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent text-xl font-bold text-accent-foreground ring-4 ring-white/20">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent text-xl font-bold text-accent-foreground ring-4 ring-white/20 md:h-16 md:w-16">
               {initials}
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <h1 className="font-display text-xl font-extrabold">{name}</h1>
+            <h1 className="font-display text-lg font-extrabold md:text-2xl">{name}</h1>
             <p className="truncate text-xs opacity-80">{user.email}</p>
           </div>
         </div>
-        <div className="mt-5 grid grid-cols-3 gap-2">
+        <div className="mx-auto mt-4 grid max-w-5xl grid-cols-3 gap-2">
           <Stat label="Reviews" value={reviewCount} icon={<Star className="h-4 w-4" />} />
           <Stat label="Favorites" value={favorites?.length ?? 0} icon={<Heart className="h-4 w-4" />} />
           <Stat label="My shops" value={myShops?.length ?? 0} icon={<Store className="h-4 w-4" />} />
         </div>
       </div>
 
-      {/* Favorites */}
-      <section className="mt-6 px-4">
-        <h2 className="mb-3 flex items-center gap-2 font-display text-lg font-bold">
-          <Heart className="h-4 w-4 text-destructive" /> Your favorites
-        </h2>
-        {favorites === null ? (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <ShopCardSkeleton />
-            <ShopCardSkeleton />
+      <div className="mx-auto max-w-5xl px-4">
+        {/* Favorites */}
+        <section className="mt-5">
+          <div className="mb-2.5 flex items-center justify-between">
+            <h2 className="flex items-center gap-2 font-display text-base font-bold md:text-lg">
+              <Heart className="h-4 w-4 text-destructive" /> Favorites
+            </h2>
+            {favorites && favorites.length > 0 && (
+              <span className="text-xs text-muted-foreground">{favorites.length} saved</span>
+            )}
           </div>
-        ) : favorites.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-            Tap the heart on any shop to save it here.
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {favorites.map((s, i) => (
-              <ShopCard key={s.id} shop={s} index={i} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* My shops */}
-      {myShops && myShops.length > 0 && (
-        <section className="mt-6 px-4">
-          <h2 className="mb-3 flex items-center gap-2 font-display text-lg font-bold">
-            <Store className="h-4 w-4 text-primary" /> Your shops
-          </h2>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {myShops.map((s, i) => (
-              <ShopCard key={s.id} shop={s} index={i} />
-            ))}
-          </div>
+          {favorites === null ? (
+            <div className="grid grid-cols-2 gap-2.5 md:grid-cols-3 lg:grid-cols-4">
+              <ShopCardSkeleton />
+              <ShopCardSkeleton />
+            </div>
+          ) : favorites.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-border bg-card/50 p-5 text-center text-sm text-muted-foreground">
+              <Heart className="mx-auto mb-2 h-5 w-5 opacity-60" />
+              Tap the heart on any shop to save it here.
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2.5 md:grid-cols-3 lg:grid-cols-4">
+              {favorites.map((s, i) => (
+                <ShopCard key={s.id} shop={s} index={i} />
+              ))}
+            </div>
+          )}
         </section>
-      )}
 
-      <div className="mt-8 px-4">
-        <Button
-          variant="outline"
-          className="w-full gap-2"
-          onClick={async () => {
-            await signOut();
-            nav({ to: "/" });
-          }}
-        >
-          <LogOut className="h-4 w-4" /> Sign out
-        </Button>
+        {/* My shops */}
+        <section className="mt-7">
+          <div className="mb-2.5 flex items-center justify-between">
+            <h2 className="flex items-center gap-2 font-display text-base font-bold md:text-lg">
+              <Store className="h-4 w-4 text-primary" /> Your shops
+            </h2>
+            <Link
+              to="/shops/new"
+              className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground tap-shrink"
+            >
+              <Plus className="h-3.5 w-3.5" /> Add shop
+            </Link>
+          </div>
+          {myShops === null ? (
+            <div className="grid grid-cols-2 gap-2.5 md:grid-cols-3 lg:grid-cols-4">
+              <ShopCardSkeleton />
+            </div>
+          ) : myShops.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-border bg-card/50 p-5 text-center text-sm text-muted-foreground">
+              <Store className="mx-auto mb-2 h-5 w-5 opacity-60" />
+              You haven't added any shop yet.
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2.5 md:grid-cols-3 lg:grid-cols-4">
+              {myShops.map((s, i) => (
+                <div key={s.id} className="relative">
+                  <ShopCard shop={s} index={i} />
+                  <Link
+                    to="/shops/$shopId/edit"
+                    params={{ shopId: s.id }}
+                    className="absolute left-2 top-2 z-10 inline-flex items-center gap-1 rounded-full bg-primary px-2 py-1 text-[10px] font-semibold text-primary-foreground shadow-[var(--shadow-soft)] backdrop-blur tap-shrink"
+                    aria-label="Edit shop"
+                  >
+                    <Pencil className="h-3 w-3" /> Edit
+                  </Link>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <div className="mt-8">
+          <Button
+            variant="outline"
+            className="w-full gap-2"
+            onClick={async () => {
+              await signOut();
+              nav({ to: "/" });
+            }}
+          >
+            <LogOut className="h-4 w-4" /> Sign out
+          </Button>
+        </div>
       </div>
 
       <BottomNav />
@@ -180,9 +214,12 @@ function Profile() {
 
 function Stat({ label, value, icon }: { label: string; value: number; icon: React.ReactNode }) {
   return (
-    <div className="rounded-2xl bg-white/10 px-3 py-2.5 backdrop-blur">
-      <div className="flex items-center gap-1.5 text-[11px] uppercase opacity-80">{icon}{label}</div>
-      <div className="mt-0.5 font-display text-xl font-extrabold">{value}</div>
+    <div className="rounded-2xl bg-white/15 px-3 py-2 backdrop-blur ring-1 ring-white/10">
+      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide opacity-90">
+        {icon}
+        {label}
+      </div>
+      <div className="mt-0.5 font-display text-lg font-extrabold leading-tight md:text-xl">{value}</div>
     </div>
   );
 }
