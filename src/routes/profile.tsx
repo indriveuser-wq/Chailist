@@ -8,7 +8,7 @@ import type { ShopWithStats } from "@/lib/queries";
 import { fetchShops } from "@/lib/queries";
 import { Logo, Wordmark } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
-import { Heart, LogOut, Store, Star, Plus, Pencil } from "lucide-react";
+import { Heart, LogOut, Store, Star, Plus, Pencil, ListOrdered } from "lucide-react";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
 
@@ -191,16 +191,26 @@ function Profile() {
           ) : (
             <div className="grid grid-cols-2 gap-2.5 md:grid-cols-3 lg:grid-cols-4">
               {myShops.map((s, i) => (
-                <div key={s.id} className="relative">
+                <div key={s.id} className="flex flex-col gap-1.5">
                   <ShopCard shop={s} index={i} />
-                  <Link
-                    to="/shops/$shopId/edit"
-                    params={{ shopId: s.id }}
-                    className="absolute left-2 top-2 z-10 inline-flex items-center gap-1 rounded-full bg-primary px-2 py-1 text-[10px] font-semibold text-primary-foreground shadow-[var(--shadow-soft)] backdrop-blur tap-shrink"
-                    aria-label="Edit shop"
-                  >
-                    <Pencil className="h-3 w-3" /> Edit
-                  </Link>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <Link
+                      to="/shops/$shopId/edit"
+                      params={{ shopId: s.id }}
+                      className="inline-flex items-center justify-center gap-1 rounded-lg border border-border bg-card px-2 py-1.5 text-[11px] font-semibold text-foreground tap-shrink"
+                      aria-label="Edit shop details"
+                    >
+                      <Pencil className="h-3 w-3" /> Edit shop
+                    </Link>
+                    <Link
+                      to="/shops/$shopId/menu"
+                      params={{ shopId: s.id }}
+                      className="inline-flex items-center justify-center gap-1 rounded-lg bg-primary px-2 py-1.5 text-[11px] font-semibold text-primary-foreground tap-shrink"
+                      aria-label="Edit menu"
+                    >
+                      <ListOrdered className="h-3 w-3" /> Menu
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>

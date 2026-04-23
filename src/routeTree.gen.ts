@@ -15,6 +15,7 @@ import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopsNewRouteImport } from './routes/shops.new'
 import { Route as ShopsShopIdRouteImport } from './routes/shops.$shopId'
+import { Route as ShopsShopIdMenuRouteImport } from './routes/shops.$shopId.menu'
 import { Route as ShopsShopIdEditRouteImport } from './routes/shops.$shopId.edit'
 
 const ProfileRoute = ProfileRouteImport.update({
@@ -47,6 +48,11 @@ const ShopsShopIdRoute = ShopsShopIdRouteImport.update({
   path: '/shops/$shopId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShopsShopIdMenuRoute = ShopsShopIdMenuRouteImport.update({
+  id: '/menu',
+  path: '/menu',
+  getParentRoute: () => ShopsShopIdRoute,
+} as any)
 const ShopsShopIdEditRoute = ShopsShopIdEditRouteImport.update({
   id: '/edit',
   path: '/edit',
@@ -61,6 +67,7 @@ export interface FileRoutesByFullPath {
   '/shops/$shopId': typeof ShopsShopIdRouteWithChildren
   '/shops/new': typeof ShopsNewRoute
   '/shops/$shopId/edit': typeof ShopsShopIdEditRoute
+  '/shops/$shopId/menu': typeof ShopsShopIdMenuRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByTo {
   '/shops/$shopId': typeof ShopsShopIdRouteWithChildren
   '/shops/new': typeof ShopsNewRoute
   '/shops/$shopId/edit': typeof ShopsShopIdEditRoute
+  '/shops/$shopId/menu': typeof ShopsShopIdMenuRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,6 +88,7 @@ export interface FileRoutesById {
   '/shops/$shopId': typeof ShopsShopIdRouteWithChildren
   '/shops/new': typeof ShopsNewRoute
   '/shops/$shopId/edit': typeof ShopsShopIdEditRoute
+  '/shops/$shopId/menu': typeof ShopsShopIdMenuRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,6 +100,7 @@ export interface FileRouteTypes {
     | '/shops/$shopId'
     | '/shops/new'
     | '/shops/$shopId/edit'
+    | '/shops/$shopId/menu'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -100,6 +110,7 @@ export interface FileRouteTypes {
     | '/shops/$shopId'
     | '/shops/new'
     | '/shops/$shopId/edit'
+    | '/shops/$shopId/menu'
   id:
     | '__root__'
     | '/'
@@ -109,6 +120,7 @@ export interface FileRouteTypes {
     | '/shops/$shopId'
     | '/shops/new'
     | '/shops/$shopId/edit'
+    | '/shops/$shopId/menu'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -164,6 +176,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopsShopIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shops/$shopId/menu': {
+      id: '/shops/$shopId/menu'
+      path: '/menu'
+      fullPath: '/shops/$shopId/menu'
+      preLoaderRoute: typeof ShopsShopIdMenuRouteImport
+      parentRoute: typeof ShopsShopIdRoute
+    }
     '/shops/$shopId/edit': {
       id: '/shops/$shopId/edit'
       path: '/edit'
@@ -176,10 +195,12 @@ declare module '@tanstack/react-router' {
 
 interface ShopsShopIdRouteChildren {
   ShopsShopIdEditRoute: typeof ShopsShopIdEditRoute
+  ShopsShopIdMenuRoute: typeof ShopsShopIdMenuRoute
 }
 
 const ShopsShopIdRouteChildren: ShopsShopIdRouteChildren = {
   ShopsShopIdEditRoute: ShopsShopIdEditRoute,
+  ShopsShopIdMenuRoute: ShopsShopIdMenuRoute,
 }
 
 const ShopsShopIdRouteWithChildren = ShopsShopIdRoute._addFileChildren(
