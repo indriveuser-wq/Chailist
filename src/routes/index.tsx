@@ -185,28 +185,28 @@ function Home() {
                   key={s.id}
                   to="/shops/$shopId"
                   params={{ shopId: s.id }}
-                  className="tap-shrink relative block w-64 shrink-0 animate-fade-up overflow-hidden rounded-2xl shadow-[var(--shadow-card)]"
+                  className="tap-shrink relative block w-44 sm:w-52 md:w-56 shrink-0 animate-fade-up overflow-hidden rounded-2xl shadow-[var(--shadow-card)]"
                   style={{ animationDelay: `${i * 60}ms` }}
                 >
-                  <div className="aspect-[4/5] w-full overflow-hidden bg-muted">
+                  <div className="aspect-[3/4] w-full overflow-hidden bg-muted">
                     {s.image_url && (
                       <img
                         src={s.image_url}
                         alt={s.name}
                         loading="lazy"
-                        className="h-full w-full object-cover transition-transform duration-700 hover:scale-110"
+                        className="h-full w-full object-cover md:transition-transform md:duration-500 md:hover:scale-110"
                       />
                     )}
                   </div>
                   <div className="absolute inset-0 bg-[var(--gradient-overlay)]" />
-                  <div className="absolute inset-x-3 bottom-3 text-primary-foreground">
-                    <div className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-accent-foreground">
+                  <div className="absolute inset-x-2.5 bottom-2.5 text-primary-foreground">
+                    <div className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-[11px] font-bold text-accent-foreground">
                       ★ {s.avg_rating.toFixed(1)}
                     </div>
-                    <h3 className="mt-1.5 font-display text-base font-bold leading-tight text-white drop-shadow">
+                    <h3 className="mt-1 line-clamp-1 font-display text-sm font-bold leading-tight text-white drop-shadow sm:text-base">
                       {s.name}
                     </h3>
-                    <p className="text-xs text-white/90 drop-shadow">{s.location}</p>
+                    <p className="line-clamp-1 text-[11px] text-white/90 drop-shadow">{s.location}</p>
                   </div>
                 </Link>
               ))}

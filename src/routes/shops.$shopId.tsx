@@ -23,7 +23,7 @@ type Review = {
   review_text: string | null;
   created_at: string;
   user_id: string;
-  profiles?: { display_name: string | null; avatar_url: string | null } | null;
+  profile?: { display_name: string | null; avatar_url: string | null } | null;
 };
 
 const PRICE_LABEL: Record<string, string> = { low: "₹", medium: "₹₹", high: "₹₹₹" };
@@ -57,12 +57,24 @@ function ShopDetail() {
     setGallery(Array.from(new Set(combined)));
     const { data: r } = await supabase
       .from("ratings")
-      .select("id, rating, review_text, created_at, user_id, profiles(display_name, avatar_url)")
+      .select("id, rating, review_text, created_at, user_id")
       .eq("shop_id", shopId)
       .order("created_at", { ascending: false });
-    setReviews((r ?? []) as any);
+    const rows = (r ?? []) as Omit<Review, "profile">[];
+    // No FK between ratings.user_id and profiles → fetch profiles in a 2nd query.
+    let profileMap = new Map<string, { display_name: string | null; avatar_url: string | null }>();
+    const userIds = Array.from(new Set(rows.map((x) => x.user_id)));
+    if (userIds.length) {
+      const { data: profs } = await supabase
+        .from("profiles")
+        .select("id, display_name, avatar_url")
+        .in("id", userIds);
+      profileMap = new Map((profs ?? []).map((p: any) => [p.id, { display_name: p.display_name, avatar_url: p.avatar_url }]));
+    }
+    const merged: Review[] = rows.map((x) => ({ ...x, profile: profileMap.get(x.user_id) ?? null }));
+    setReviews(merged);
     if (user) {
-      const mine = (r ?? []).find((x: any) => x.user_id === user.id);
+      const mine = rows.find((x) => x.user_id === user.id);
       if (mine) {
         setExisting(mine as any);
         setMyRating(mine.rating);
@@ -314,7 +326,7 @@ function ShopDetail() {
           ) : (
             <ul className="space-y-3">
               {reviews.map((r, i) => {
-                const initial = (r.profiles?.display_name ?? "A").slice(0, 1).toUpperCase();
+                const initial = (r.profile?.display_name ?? "A").slice(0, 1).toUpperCase();
                 return (
                   <li
                     key={r.id}
@@ -323,9 +335,9 @@ function ShopDetail() {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        {r.profiles?.avatar_url ? (
+                        {r.profile?.avatar_url ? (
                           <img
-                            src={r.profiles.avatar_url}
+                            src={r.profile.avatar_url}
                             alt=""
                             className="h-8 w-8 rounded-full object-cover"
                           />
@@ -335,7 +347,7 @@ function ShopDetail() {
                           </div>
                         )}
                         <span className="text-sm font-semibold">
-                          {r.profiles?.display_name ?? "Anonymous"}
+                          {r.profile?.display_name ?? "Anonymous"}
                         </span>
                       </div>
                       <StarRating value={r.rating} readOnly size={14} />

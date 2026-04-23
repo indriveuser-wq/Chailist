@@ -52,7 +52,20 @@ function Profile() {
         .select("display_name, avatar_url")
         .eq("id", user.id)
         .maybeSingle();
-      setProfile(prof);
+      if (prof) {
+        setProfile(prof);
+      } else {
+        // Profile row missing (older accounts before the trigger). Fallback to
+        // auth user metadata and create the row so it shows up everywhere.
+        const meta = (user.user_metadata ?? {}) as Record<string, string | undefined>;
+        const display_name =
+          meta.full_name ?? meta.name ?? user.email?.split("@")[0] ?? null;
+        const avatar_url = meta.avatar_url ?? meta.picture ?? null;
+        setProfile({ display_name, avatar_url });
+        await supabase
+          .from("profiles")
+          .upsert({ id: user.id, display_name, avatar_url }, { onConflict: "id" });
+      }
     })();
   }, [user]);
 
