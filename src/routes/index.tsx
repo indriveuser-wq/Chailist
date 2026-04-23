@@ -106,24 +106,24 @@ function Home() {
 
       {/* ────── DESKTOP HERO + PROMO TILES ────── */}
       <section className="hidden md:block px-6 pt-6">
-        <div className="overflow-hidden rounded-3xl bg-[var(--gradient-hero)] shadow-[var(--shadow-elevated)]">
-          <div className="grid grid-cols-2 items-center gap-6 p-8">
-            <div className="text-primary-foreground">
-              <h2 className="font-display text-4xl font-extrabold leading-tight lg:text-5xl">
+        <div className="relative overflow-hidden rounded-3xl shadow-[var(--shadow-elevated)]">
+          {/* Full-bleed hero slider */}
+          <HeroSlider />
+          {/* Overlay headline + CTA */}
+          <div className="pointer-events-none absolute inset-0 z-20 flex items-center">
+            <div className="max-w-xl px-8 text-primary-foreground lg:px-12">
+              <h2 className="font-display text-4xl font-extrabold leading-tight text-white drop-shadow-lg lg:text-5xl">
                 Stock up on the<br />coziest cups of chai
               </h2>
-              <p className="mt-3 max-w-md text-base opacity-90">
-                Discover farm-fresh tea, iconic street stalls and warm cafés near you — rated by real chai lovers.
+              <p className="mt-3 max-w-md text-base text-white/90 drop-shadow lg:text-lg">
+                Discover farm-fresh tea, iconic street stalls and warm cafés near you.
               </p>
               <Link
                 to="/explore"
-                className="tap-shrink mt-5 inline-flex items-center gap-1.5 rounded-xl bg-background px-5 py-3 text-sm font-bold text-foreground shadow-[var(--shadow-soft)]"
+                className="tap-shrink pointer-events-auto mt-5 inline-flex items-center gap-1.5 rounded-xl bg-background px-5 py-3 text-sm font-bold text-foreground shadow-[var(--shadow-soft)] hover:opacity-90"
               >
                 Explore shops <ChevronRight className="h-4 w-4" />
               </Link>
-            </div>
-            <div className="relative h-56 lg:h-64">
-              <HeroSlider />
             </div>
           </div>
         </div>
