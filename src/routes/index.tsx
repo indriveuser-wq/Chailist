@@ -278,8 +278,6 @@ function Home() {
           </div>
         </section>
       )}
-
-      <BottomNav />
     </div>
   );
 }
