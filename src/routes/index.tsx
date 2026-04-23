@@ -61,6 +61,7 @@ function Home() {
 
   return (
     <div className="mx-auto min-h-screen max-w-6xl bg-background pb-24">
+      <BottomNav />
       {/* ────── MOBILE TOP HEADER ────── */}
       <header className="px-4 pt-5 sm:pt-6 md:hidden">
         <div className="flex items-center justify-between">
