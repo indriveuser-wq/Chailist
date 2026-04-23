@@ -185,7 +185,7 @@ function Home() {
                   key={s.id}
                   to="/shops/$shopId"
                   params={{ shopId: s.id }}
-                  className="tap-shrink relative block w-44 sm:w-52 md:w-56 shrink-0 animate-fade-up overflow-hidden rounded-2xl shadow-[var(--shadow-card)]"
+                  className="tap-shrink relative block w-24 sm:w-28 md:w-32 shrink-0 animate-fade-up overflow-hidden rounded-xl shadow-[var(--shadow-card)]"
                   style={{ animationDelay: `${i * 60}ms` }}
                 >
                   <div className="aspect-[3/4] w-full overflow-hidden bg-muted">
@@ -199,14 +199,14 @@ function Home() {
                     )}
                   </div>
                   <div className="absolute inset-0 bg-[var(--gradient-overlay)]" />
-                  <div className="absolute inset-x-2.5 bottom-2.5 text-primary-foreground">
-                    <div className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-[11px] font-bold text-accent-foreground">
+                  <div className="absolute inset-x-1.5 bottom-1.5 text-primary-foreground">
+                    <div className="inline-flex items-center gap-0.5 rounded-full bg-accent px-1.5 py-0.5 text-[9px] font-bold text-accent-foreground">
                       ★ {s.avg_rating.toFixed(1)}
                     </div>
-                    <h3 className="mt-1 line-clamp-1 font-display text-sm font-bold leading-tight text-white drop-shadow sm:text-base">
+                    <h3 className="mt-0.5 line-clamp-1 font-display text-[11px] font-bold leading-tight text-white drop-shadow sm:text-xs">
                       {s.name}
                     </h3>
-                    <p className="line-clamp-1 text-[11px] text-white/90 drop-shadow">{s.location}</p>
+                    <p className="line-clamp-1 text-[9px] text-white/90 drop-shadow">{s.location}</p>
                   </div>
                 </Link>
               ))}
