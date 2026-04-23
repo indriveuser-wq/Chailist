@@ -178,3 +178,26 @@
     -webkit-backdrop-filter: saturate(140%) blur(14px);
   }
 }
+
+/* ───── Mobile / touch UX: kill hover effects + heavy transitions ─────
+   Devices without a fine pointer (phones, most tablets) never trigger
+   :hover meaningfully — the styles only cause sticky-hover bugs after a
+   tap. Disable hover transforms / scales / shadows and drop long
+   transitions so the UI feels instant. */
+@media (hover: none) and (pointer: coarse) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.3s;
+  }
+  /* Keep only the small tap feedback */
+  .tap-shrink { transition: transform 0.12s ease, opacity 0.12s ease !important; }
+
+  /* Neutralise hover-only visual effects on touch */
+  .group:hover .group-hover\:scale-110,
+  .hover\:scale-110:hover,
+  .hover\:scale-105:hover { transform: none !important; }
+  .hover\:-translate-y-0\.5:hover { transform: none !important; }
+  .hover\:shadow-\[var\(--shadow-elevated\)\]:hover { box-shadow: var(--shadow-card) !important; }
+  .hover\:bg-secondary\/70:hover { background-color: var(--secondary) !important; }
+  .hover\:opacity-90:hover { opacity: 1 !important; }
+}
