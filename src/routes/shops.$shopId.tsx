@@ -105,12 +105,12 @@ function ShopDetail() {
   if (loading)
     return (
       <div className="min-h-screen bg-background pb-24">
+        <BottomNav />
         <div className="aspect-[4/3] animate-pulse bg-muted" />
         <div className="space-y-3 p-4">
           <div className="h-6 w-2/3 animate-pulse rounded bg-muted" />
           <div className="h-4 w-1/2 animate-pulse rounded bg-muted" />
         </div>
-        <BottomNav />
       </div>
     );
   if (!shop)
@@ -125,6 +125,7 @@ function ShopDetail() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
+      <BottomNav />
       {/* Sticky compact header */}
       <header
         className={`fixed inset-x-0 top-0 z-30 transition-all duration-300 ${
@@ -352,7 +353,6 @@ function ShopDetail() {
           )}
         </section>
       </main>
-      <BottomNav />
     </div>
   );
 }
