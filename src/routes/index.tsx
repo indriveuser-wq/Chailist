@@ -61,6 +61,7 @@ function Home() {
 
   return (
     <div className="mx-auto min-h-screen max-w-6xl bg-background pb-24">
+      <BottomNav />
       {/* ────── MOBILE TOP HEADER ────── */}
       <header className="px-4 pt-5 sm:pt-6 md:hidden">
         <div className="flex items-center justify-between">
@@ -105,26 +106,9 @@ function Home() {
 
       {/* ────── DESKTOP HERO + PROMO TILES ────── */}
       <section className="hidden md:block px-6 pt-6">
-        <div className="overflow-hidden rounded-3xl bg-[var(--gradient-hero)] shadow-[var(--shadow-elevated)]">
-          <div className="grid grid-cols-2 items-center gap-6 p-8">
-            <div className="text-primary-foreground">
-              <h2 className="font-display text-4xl font-extrabold leading-tight lg:text-5xl">
-                Stock up on the<br />coziest cups of chai
-              </h2>
-              <p className="mt-3 max-w-md text-base opacity-90">
-                Discover farm-fresh tea, iconic street stalls and warm cafés near you — rated by real chai lovers.
-              </p>
-              <Link
-                to="/explore"
-                className="tap-shrink mt-5 inline-flex items-center gap-1.5 rounded-xl bg-background px-5 py-3 text-sm font-bold text-foreground shadow-[var(--shadow-soft)]"
-              >
-                Explore shops <ChevronRight className="h-4 w-4" />
-              </Link>
-            </div>
-            <div className="relative h-56 lg:h-64">
-              <HeroSlider />
-            </div>
-          </div>
+        {/* Full-bleed hero slider — fills the entire container width */}
+        <div className="[&>div]:!aspect-[21/8]">
+          <HeroSlider />
         </div>
 
         {/* Promo tiles row (Blinkit-style) */}
@@ -277,8 +261,6 @@ function Home() {
           </div>
         </section>
       )}
-
-      <BottomNav />
     </div>
   );
 }

@@ -61,6 +61,7 @@ function Profile() {
   if (!user) {
     return (
       <div className="min-h-screen bg-background pb-24">
+        <BottomNav />
         <div className="px-6 pt-20 text-center">
           <div className="mx-auto mb-4 flex justify-center">
             <Logo size={56} />
@@ -86,7 +87,6 @@ function Profile() {
             Maybe later
           </Link>
         </div>
-        <BottomNav />
       </div>
     );
   }
@@ -96,6 +96,7 @@ function Profile() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
+      <BottomNav />
       {/* Hero header */}
       <div className="relative overflow-hidden bg-[var(--gradient-hero)] px-4 pb-7 pt-10 text-primary-foreground md:rounded-b-3xl">
         <div className="mx-auto flex max-w-5xl items-center gap-3">
@@ -206,8 +207,6 @@ function Profile() {
           </Button>
         </div>
       </div>
-
-      <BottomNav />
     </div>
   );
 }

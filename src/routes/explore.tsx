@@ -65,6 +65,7 @@ function Explore() {
 
   return (
     <div className="mx-auto min-h-screen max-w-6xl bg-background pb-24">
+      <BottomNav />
       <header className="sticky top-0 z-30 glass border-b border-border/60">
         <div className="px-4 py-3">
           <h1 className="font-display text-lg font-extrabold">Explore</h1>
@@ -171,7 +172,6 @@ function Explore() {
         )}
       </main>
 
-      <BottomNav />
       <Hidden />
     </div>
   );

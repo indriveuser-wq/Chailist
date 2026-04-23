@@ -219,18 +219,19 @@ function EditShop() {
   if (loading || authLoading) {
     return (
       <div className="min-h-screen bg-background pb-24">
+        <BottomNav />
         <div className="mx-auto max-w-2xl space-y-3 p-6">
           <div className="h-6 w-1/2 animate-pulse rounded bg-muted" />
           <div className="aspect-[16/9] animate-pulse rounded-xl bg-muted" />
           <div className="h-10 animate-pulse rounded bg-muted" />
         </div>
-        <BottomNav />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background pb-32">
+      <BottomNav />
       <main className="mx-auto max-w-2xl px-4 py-6">
         <Link
           to="/shops/$shopId"
@@ -445,7 +446,6 @@ function EditShop() {
           </div>
         </div>
       </main>
-      <BottomNav />
     </div>
   );
 }
