@@ -61,6 +61,7 @@ function Profile() {
   if (!user) {
     return (
       <div className="min-h-screen bg-background pb-24">
+        <BottomNav />
         <div className="px-6 pt-20 text-center">
           <div className="mx-auto mb-4 flex justify-center">
             <Logo size={56} />
@@ -86,7 +87,6 @@ function Profile() {
             Maybe later
           </Link>
         </div>
-        <BottomNav />
       </div>
     );
   }
