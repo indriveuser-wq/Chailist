@@ -200,4 +200,20 @@
   .hover\:shadow-\[var\(--shadow-elevated\)\]:hover { box-shadow: var(--shadow-card) !important; }
   .hover\:bg-secondary\/70:hover { background-color: var(--secondary) !important; }
   .hover\:opacity-90:hover { opacity: 1 !important; }
+
+  /* Catch-all: any hover:* utility becomes a no-op on touch */
+  [class*="hover\\:"]:hover {
+    transform: none !important;
+    filter: none !important;
+  }
+  /* Disable group-hover transforms/opacity on touch */
+  .group:hover [class*="group-hover\\:"] {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  /* Kill long transition utilities on touch (keep micro-interactions snappy) */
+  .transition-all, .transition-transform, .transition-colors,
+  .transition-opacity, .transition-shadow, .transition {
+    transition: none !important;
+  }
 }
