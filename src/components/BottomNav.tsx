@@ -110,6 +110,7 @@ export function BottomNav() {
               <li key={to}>
                 <Link
                   to={to}
+                  search={{ focus: 1 } as never}
                   className="tap-shrink -mt-6 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[var(--shadow-elevated)] ring-4 ring-background"
                   aria-label={label}
                 >
