@@ -62,6 +62,7 @@ function EditShop() {
   }, [authLoading, user, nav]);
 
   useEffect(() => {
+    if (authLoading || !user) return;
     (async () => {
       const { data: shop, error } = await supabase
         .from("shops")
@@ -73,7 +74,7 @@ function EditShop() {
         nav({ to: "/" });
         return;
       }
-      if (user && shop.owner_id !== user.id && !isAdmin) {
+      if (shop.owner_id !== user.id && !isAdmin) {
         toast.error("Not your shop");
         nav({ to: "/shops/$shopId", params: { shopId } });
         return;
@@ -94,7 +95,7 @@ function EditShop() {
       setLoading(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shopId, user?.id]);
+  }, [shopId, user?.id, authLoading]);
 
   function onPickMain(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
