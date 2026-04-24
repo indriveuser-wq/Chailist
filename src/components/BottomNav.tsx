@@ -8,7 +8,7 @@ type NavItem = { to: string; label: string; icon: typeof Home; primary?: boolean
 const items: NavItem[] = [
   { to: "/", label: "Home", icon: Home },
   { to: "/explore", label: "Explore", icon: Compass },
-  { to: "/shops/new", label: "Add", icon: PlusCircle, primary: true },
+  { to: "/explore", label: "Search", icon: Search, primary: true },
   { to: "/profile", label: "Profile", icon: UserIcon },
 ];
 
