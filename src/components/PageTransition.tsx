@@ -1,31 +1,15 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
-// AnimatePresence is still used by SlideDownModal below.
-
 /**
- * Wraps page content with directional slide transitions.
- * - Forward into a shop detail / nested route → slide-in from right
- * - Back to a parent route → slide-out to right (reverse)
- * - Sibling routes → fade
+ * Pass-through wrapper. We intentionally do NOT key on pathname here:
+ * keying the wrapper caused the whole subtree to remount on every
+ * navigation, which produced a visible "refresh / blank flash" before
+ * the new route appeared. TanStack Router already handles per-route
+ * mount/unmount; let it do its job and avoid forcing a top-level remount.
  */
 export function PageTransition({ children }: { children: ReactNode }) {
-  const location = useRouterState({ select: (s) => s.location });
-  const key = location.pathname;
-
-  // Subtle fade-in only — never unmount the previous tree (keeps scroll,
-  // form state, and avoids the "page refresh" blank flash between routes).
-  return (
-    <motion.div
-      key={key}
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
-    >
-      {children}
-    </motion.div>
-  );
+  return <>{children}</>;
 }
 
 /**
