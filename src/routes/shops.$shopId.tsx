@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useParams, useLocation } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { fetchShop, fetchShopImages, fetchTeasWithStats, type ShopWithStats, type TeaWithStats } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,6 +30,8 @@ const PRICE_LABEL: Record<string, string> = { low: "₹", medium: "₹₹", high
 
 function ShopDetail() {
   const { shopId } = useParams({ from: "/shops/$shopId" });
+  const { pathname } = useLocation();
+  const isChildRoute = /\/shops\/[^/]+\/(edit|menu)(\/|$)/.test(pathname);
   const { user } = useAuth();
   const [shop, setShop] = useState<ShopWithStats | null>(null);
   const [teas, setTeas] = useState<TeaWithStats[]>([]);
@@ -43,6 +45,10 @@ function ShopDetail() {
   const [scrolled, setScrolled] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const heroRef = useRef<HTMLDivElement>(null);
+
+  if (isChildRoute) {
+    return <Outlet />;
+  }
 
   async function reload() {
     const s = await fetchShop(shopId);
