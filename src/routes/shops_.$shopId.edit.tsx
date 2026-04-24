@@ -28,7 +28,7 @@ import {
 import { ArrowLeft, ImagePlus, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/shops/$shopId/edit")({
+export const Route = createFileRoute("/shops_/$shopId/edit")({
   component: EditShop,
 });
 

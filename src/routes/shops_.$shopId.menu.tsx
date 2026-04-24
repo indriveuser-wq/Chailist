@@ -20,7 +20,7 @@ import {
 import { ArrowLeft, Plus, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/shops/$shopId/menu")({
+export const Route = createFileRoute("/shops_/$shopId/menu")({
   component: MenuEditor,
   head: () => ({ meta: [{ title: "Edit menu — ChaiList" }] }),
 });
