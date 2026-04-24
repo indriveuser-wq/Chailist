@@ -50,6 +50,7 @@ function MenuEditor() {
   }, [authLoading, user, nav]);
 
   useEffect(() => {
+    if (authLoading || !user) return;
     (async () => {
       const { data: shop, error } = await supabase
         .from("shops")
@@ -61,7 +62,7 @@ function MenuEditor() {
         nav({ to: "/" });
         return;
       }
-      if (user && shop.owner_id !== user.id && !isAdmin) {
+      if (shop.owner_id !== user.id && !isAdmin) {
         toast.error("Not your shop");
         nav({ to: "/shops/$shopId", params: { shopId } });
         return;
@@ -82,7 +83,7 @@ function MenuEditor() {
       setLoading(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shopId, user?.id]);
+  }, [shopId, user?.id, authLoading]);
 
   function patchTea(id: string, patch: Partial<Tea>) {
     setTeas((s) => s.map((t) => (t.id === id ? { ...t, ...patch, _dirty: true } : t)));
