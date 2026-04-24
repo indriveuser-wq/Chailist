@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BottomNav } from "@/components/BottomNav";
 import { ShopCard, ShopCardSkeleton } from "@/components/ShopCard";
 import { MoodChips, MOODS } from "@/components/MoodChips";
@@ -40,9 +40,18 @@ function Explore() {
   const [minRating, setMinRating] = useState(0);
   const [priceRange, setPriceRange] = useState<string>("any");
   const [mood, setMood] = useState("all");
+  const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchShops().then(setShops).catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("focus")) {
+      // Defer to next frame so input is mounted and visible.
+      requestAnimationFrame(() => searchRef.current?.focus());
+    }
   }, []);
 
   const moodTag = useMemo(() => MOODS.find((m) => m.id === mood)?.tag ?? null, [mood]);
@@ -72,6 +81,7 @@ function Explore() {
           <div className="mt-2 flex items-center gap-2 rounded-2xl border border-border bg-card p-1.5 shadow-[var(--shadow-soft)]">
             <Search className="ml-2 h-4 w-4 text-muted-foreground" />
             <Input
+              ref={searchRef}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search shops or locations…"
