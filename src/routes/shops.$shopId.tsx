@@ -173,17 +173,17 @@ function ShopDetail() {
           onChange={setActiveImg}
           scrollY={scrollY}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-background" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-background" />
 
         {/* Top controls */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between px-4 pt-4">
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-center justify-between px-4 pt-4">
           <Link
             to="/"
             className="tap-shrink pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-background/85 backdrop-blur shadow-[var(--shadow-soft)]"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
-          <div className="pointer-events-auto flex items-center gap-2">
+          <div className="pointer-events-auto relative z-10 flex items-center gap-2">
             {user && shop.owner_id === user.id && (
               <Link
                 to="/shops/$shopId/edit"
