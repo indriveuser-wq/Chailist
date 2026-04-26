@@ -125,8 +125,8 @@ function Profile() {
             </div>
           )}
           <div className="min-w-0 flex-1">
-             <h1 className="font-display text-lg font-extrabold md:text-2xl text-primary-foreground text-slate-900">{name}</h1>
-             <p className="truncate text-xs text-primary-foreground/80 text-gray-800">{user.email}</p>
+             <h1 className="font-display text-lg font-extrabold md:text-2xl text-slate-900">{name}</h1>
+             <p className="truncate text-xs text-slate-700">{user.email}</p>
           </div>
         </div>
         <div className="mx-auto mt-4 grid max-w-5xl grid-cols-3 gap-2">
@@ -236,12 +236,12 @@ function Profile() {
 
  function Stat({ label, value, icon }: { label: string; value: number; icon: React.ReactNode }) {
    return (
-     <div className="rounded-2xl bg-white/15 px-3 py-2 backdrop-blur ring-1 ring-white/10 border-slate-950">
-       <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-primary-foreground/90 text-slate-900">
+     <div className="rounded-2xl bg-white/40 px-3 py-2 backdrop-blur ring-1 ring-slate-900/10">
+       <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-800">
          {icon}
          {label}
        </div>
-       <div className="mt-0.5 font-display text-lg font-extrabold leading-tight md:text-xl text-primary-foreground text-slate-900">{value}</div>
+       <div className="mt-0.5 font-display text-lg font-extrabold leading-tight md:text-xl text-slate-900">{value}</div>
      </div>
    );
  }
