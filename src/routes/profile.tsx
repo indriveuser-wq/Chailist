@@ -8,7 +8,7 @@ import type { ShopWithStats } from "@/lib/queries";
 import { fetchShops } from "@/lib/queries";
 import { Logo, Wordmark } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
-import { Heart, LogOut, Store, Star, Plus, Pencil, ListOrdered } from "lucide-react";
+import { Heart, LogOut, Store, Star, Plus, Pencil, ListOrdered, ShieldCheck } from "lucide-react";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
 
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/profile")({
 });
 
 function Profile() {
-  const { user, signOut, loading } = useAuth();
+  const { user, signOut, loading, isAdmin } = useAuth();
   const nav = useNavigate();
   const [favorites, setFavorites] = useState<ShopWithStats[] | null>(null);
   const [myShops, setMyShops] = useState<ShopWithStats[] | null>(null);
@@ -127,6 +127,14 @@ function Profile() {
           <div className="min-w-0 flex-1">
              <h1 className="font-display text-lg font-extrabold md:text-2xl text-slate-900">{name}</h1>
              <p className="truncate text-xs text-slate-700">{user.email}</p>
+             {isAdmin && (
+               <Link
+                 to="/admin"
+                 className="mt-1 inline-flex items-center gap-1 rounded-full bg-slate-900 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white"
+               >
+                 <ShieldCheck className="h-3 w-3" /> Admin panel
+               </Link>
+             )}
           </div>
         </div>
         <div className="mx-auto mt-4 grid max-w-5xl grid-cols-3 gap-2">
@@ -193,6 +201,11 @@ function Profile() {
               {myShops.map((s, i) => (
                 <div key={s.id} className="flex flex-col gap-1.5">
                   <ShopCard shop={s} index={i} />
+                  {!s.approved && (
+                    <p className="rounded-md bg-amber-100 px-2 py-1 text-center text-[10px] font-bold text-amber-700">
+                      Pending admin approval
+                    </p>
+                  )}
                   <div className="grid grid-cols-2 gap-1.5">
                     <Link
                       to="/shops/$shopId/edit"
