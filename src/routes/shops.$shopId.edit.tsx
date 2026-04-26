@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ArrowLeft, ImagePlus, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
+import { DAY_LABELS } from "@/lib/hours";
 
 export const Route = createFileRoute("/shops/$shopId/edit")({
   component: EditShop,
@@ -56,6 +57,11 @@ function EditShop() {
   const [teas, setTeas] = useState<Tea[]>([]);
   const [removedImageIds, setRemovedImageIds] = useState<string[]>([]);
   const [removedTeaIds, setRemovedTeaIds] = useState<string[]>([]);
+  const [mobile, setMobile] = useState("");
+  const [openTime, setOpenTime] = useState("");
+  const [closeTime, setCloseTime] = useState("");
+  const [openDays, setOpenDays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]);
+  const [approved, setApproved] = useState(true);
 
   useEffect(() => {
     if (!authLoading && !user) nav({ to: "/login" });
@@ -86,6 +92,11 @@ function EditShop() {
       setPriceRange(shop.price_range as any);
       setTags(shop.tags ?? []);
       setMainImage(shop.image_url);
+      setMobile((shop as any).mobile_number ?? "");
+      setOpenTime(((shop as any).open_time ?? "08:00").slice(0, 5));
+      setCloseTime(((shop as any).close_time ?? "21:00").slice(0, 5));
+      setOpenDays((shop as any).open_days ?? [0, 1, 2, 3, 4, 5, 6]);
+      setApproved(!!shop.approved);
       const [{ data: imgs }, { data: ts }] = await Promise.all([
         supabase.from("shop_images").select("id, url").eq("shop_id", shopId).order("sort_order"),
         supabase.from("tea_items").select("id, name, price").eq("shop_id", shopId).order("created_at"),
@@ -161,6 +172,10 @@ function EditShop() {
           price_range: priceRange,
           tags,
           image_url,
+          mobile_number: mobile.trim() || null,
+          open_time: openTime || null,
+          close_time: closeTime || null,
+          open_days: openDays,
         })
         .eq("id", shopId);
       if (upErr) throw upErr;
@@ -315,6 +330,73 @@ function EditShop() {
               maxLength={800}
             />
           </div>
+
+          <div>
+            <Label htmlFor="mob">Owner mobile number</Label>
+            <Input
+              id="mob"
+              type="tel"
+              inputMode="tel"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+              placeholder="+91 98765 43210"
+            />
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              Shown publicly so customers can call.
+            </p>
+          </div>
+
+          <div>
+            <Label>Opening hours</Label>
+            <div className="mt-1 grid grid-cols-2 gap-3">
+              <div>
+                <span className="text-[11px] text-muted-foreground">Opens</span>
+                <Input
+                  type="time"
+                  value={openTime}
+                  onChange={(e) => setOpenTime(e.target.value)}
+                />
+              </div>
+              <div>
+                <span className="text-[11px] text-muted-foreground">Closes</span>
+                <Input
+                  type="time"
+                  value={closeTime}
+                  onChange={(e) => setCloseTime(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {DAY_LABELS.map((d, i) => {
+                const on = openDays.includes(i);
+                return (
+                  <button
+                    type="button"
+                    key={d}
+                    onClick={() =>
+                      setOpenDays((s) =>
+                        on ? s.filter((x) => x !== i) : [...s, i].sort((a, b) => a - b),
+                      )
+                    }
+                    className={`rounded-full border px-3 py-1 text-xs transition ${
+                      on
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-card"
+                    }`}
+                  >
+                    {d}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {!approved && (
+            <div className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900">
+              This shop is awaiting admin approval and is not yet visible to other users.
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="price">Starting (₹)</Label>

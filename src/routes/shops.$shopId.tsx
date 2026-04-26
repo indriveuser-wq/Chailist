@@ -6,12 +6,13 @@ import { useAuth } from "@/lib/auth";
 import { StarRating } from "@/components/StarRating";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { MapPin, BadgeCheck, ArrowLeft, Star, MessageSquare, Pencil } from "lucide-react";
+import { MapPin, BadgeCheck, ArrowLeft, Star, MessageSquare, Pencil, Clock, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { BottomNav } from "@/components/BottomNav";
 import { TeaRow } from "@/components/TeaRatingPopover";
 import { ShopGallery } from "@/components/ShopGallery";
+import { getOpenStatus, DAY_LABELS } from "@/lib/hours";
 
 export const Route = createFileRoute("/shops/$shopId")({
   component: ShopDetail,
@@ -32,7 +33,7 @@ function ShopDetail() {
   const { shopId } = useParams({ from: "/shops/$shopId" });
   const { pathname } = useLocation();
   const isChildRoute = /\/shops\/[^/]+\/(edit|menu)(\/|$)/.test(pathname);
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [shop, setShop] = useState<ShopWithStats | null>(null);
   const [teas, setTeas] = useState<TeaWithStats[]>([]);
   const [gallery, setGallery] = useState<string[]>([]);
@@ -190,7 +191,7 @@ function ShopDetail() {
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <div className="pointer-events-auto relative z-10 flex items-center gap-2">
-            {user && shop.owner_id === user.id && (
+            {user && (shop.owner_id === user.id || isAdmin) && (
               <Link
                 to="/shops/$shopId/edit"
                 params={{ shopId: shop.id }}
@@ -265,6 +266,52 @@ function ShopDetail() {
             <p className="text-sm leading-relaxed text-foreground/85">{shop.description}</p>
           </section>
         )}
+
+        {/* Hours & contact */}
+        <section className="mt-5 animate-fade-up">
+          <div className="grid gap-2 sm:grid-cols-2">
+            <div className="rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-soft)]">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-primary" />
+                <span className="font-display text-sm font-bold">Hours</span>
+              </div>
+              {(() => {
+                const s = getOpenStatus(shop.open_time, shop.close_time, shop.open_days);
+                return (
+                  <p
+                    className={`mt-1 text-xs font-semibold ${
+                      s.isOpen ? "text-emerald-600" : "text-rose-600"
+                    }`}
+                  >
+                    {s.label}
+                  </p>
+                );
+              })()}
+              {shop.open_days && shop.open_days.length > 0 && (
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  Open: {shop.open_days.map((d) => DAY_LABELS[d]).join(", ")}
+                </p>
+              )}
+            </div>
+            {shop.mobile_number && (
+              <a
+                href={`tel:${shop.mobile_number.replace(/\s+/g, "")}`}
+                className="flex items-center justify-between rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-soft)] tap-shrink"
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-primary" />
+                    <span className="font-display text-sm font-bold">Call shop</span>
+                  </div>
+                  <p className="mt-1 text-xs text-foreground/80">{shop.mobile_number}</p>
+                </div>
+                <span className="rounded-full bg-primary px-3 py-1 text-[11px] font-semibold text-primary-foreground">
+                  Call
+                </span>
+              </a>
+            )}
+          </div>
+        </section>
 
         {/* Tea menu */}
         <section className="mt-6 animate-fade-up">

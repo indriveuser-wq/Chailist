@@ -17,6 +17,7 @@ import {
 import { toast } from "sonner";
 import { z } from "zod";
 import { ImagePlus, Trash2, Plus } from "lucide-react";
+import { DAY_LABELS } from "@/lib/hours";
 
 export const Route = createFileRoute("/shops/new")({
   component: NewShop,
@@ -30,6 +31,12 @@ const schema = z.object({
   description: z.string().trim().max(800).optional(),
   starting_price: z.number().min(0).max(100000),
   price_range: z.enum(["low", "medium", "high"]),
+  mobile_number: z
+    .string()
+    .trim()
+    .min(7, "Enter a valid mobile number")
+    .max(20)
+    .regex(/^[0-9+\-\s()]+$/, "Digits and + only"),
 });
 
 type TeaInput = { name: string; price: string };
@@ -47,6 +54,10 @@ function NewShop() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [mobile, setMobile] = useState("");
+  const [openTime, setOpenTime] = useState("08:00");
+  const [closeTime, setCloseTime] = useState("21:00");
+  const [openDays, setOpenDays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]);
 
   useEffect(() => {
     if (!loading && !user) nav({ to: "/login" });
@@ -69,6 +80,7 @@ function NewShop() {
       description: description || undefined,
       starting_price: Number(startingPrice || 0),
       price_range: priceRange,
+      mobile_number: mobile,
     });
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
 
@@ -99,7 +111,11 @@ function NewShop() {
           price_range: parsed.data.price_range,
           tags,
           image_url,
-          approved: true, // auto-approve for MVP
+          mobile_number: parsed.data.mobile_number,
+          open_time: openTime,
+          close_time: closeTime,
+          open_days: openDays,
+          // pending admin approval
         })
         .select()
         .single();
@@ -111,8 +127,8 @@ function NewShop() {
       if (validTeas.length) {
         await supabase.from("tea_items").insert(validTeas);
       }
-      toast.success("Shop added!");
-      nav({ to: "/shops/$shopId", params: { shopId: shop.id } });
+      toast.success("Shop submitted! Awaiting admin approval.");
+      nav({ to: "/profile" });
     } catch (err: any) {
       toast.error(err.message ?? "Failed to add shop");
     } finally {
@@ -164,6 +180,69 @@ function NewShop() {
               placeholder="Area, City"
               required
             />
+          </div>
+
+          <div>
+            <Label htmlFor="mob">Owner mobile number</Label>
+            <Input
+              id="mob"
+              type="tel"
+              inputMode="tel"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+              placeholder="+91 98765 43210"
+              required
+            />
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              Shown on your shop page so customers can call. Required for admin approval.
+            </p>
+          </div>
+
+          <div>
+            <Label>Opening hours</Label>
+            <div className="mt-1 grid grid-cols-2 gap-3">
+              <div>
+                <span className="text-[11px] text-muted-foreground">Opens</span>
+                <Input
+                  type="time"
+                  value={openTime}
+                  onChange={(e) => setOpenTime(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <span className="text-[11px] text-muted-foreground">Closes</span>
+                <Input
+                  type="time"
+                  value={closeTime}
+                  onChange={(e) => setCloseTime(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {DAY_LABELS.map((d, i) => {
+                const on = openDays.includes(i);
+                return (
+                  <button
+                    type="button"
+                    key={d}
+                    onClick={() =>
+                      setOpenDays((s) =>
+                        on ? s.filter((x) => x !== i) : [...s, i].sort((a, b) => a - b),
+                      )
+                    }
+                    className={`rounded-full border px-3 py-1 text-xs transition ${
+                      on
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-card"
+                    }`}
+                  >
+                    {d}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div>
