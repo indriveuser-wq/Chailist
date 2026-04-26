@@ -2,10 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { MapPin, BadgeCheck, Star } from "lucide-react";
 import type { ShopWithStats } from "@/lib/queries";
 import { FavoriteButton } from "./FavoriteButton";
+import { getOpenStatus } from "@/lib/hours";
 
 const PRICE_LABEL: Record<string, string> = { low: "₹", medium: "₹₹", high: "₹₹₹" };
 
 export function ShopCard({ shop, index = 0 }: { shop: ShopWithStats; index?: number }) {
+  const status = getOpenStatus(shop.open_time, shop.close_time, shop.open_days);
+  const hasHours = !!(shop.open_time && shop.close_time);
   return (
     <Link
       to="/shops/$shopId"
@@ -48,6 +51,24 @@ export function ShopCard({ shop, index = 0 }: { shop: ShopWithStats; index?: num
               <span className="font-medium opacity-80">({shop.rating_count})</span>
             )}
           </div>
+
+          {/* open/closed badge bottom-right */}
+          {hasHours && (
+            <div
+              className={`absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold shadow-[var(--shadow-soft)] ${
+                status.isOpen
+                  ? "bg-emerald-500 text-white"
+                  : "bg-slate-900/80 text-white"
+              }`}
+            >
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${
+                  status.isOpen ? "bg-white" : "bg-rose-400"
+                }`}
+              />
+              {status.isOpen ? "Open" : "Closed"}
+            </div>
+          )}
         </div>
 
         <div className="space-y-1 p-2.5 md:space-y-1.5 md:p-3">
