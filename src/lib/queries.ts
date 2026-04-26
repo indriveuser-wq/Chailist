@@ -13,6 +13,10 @@ export type Shop = {
   verified: boolean;
   approved: boolean;
   created_at: string;
+  open_time: string | null;
+  close_time: string | null;
+  open_days: number[];
+  mobile_number: string | null;
 };
 
 export type ShopWithStats = Shop & { avg_rating: number; rating_count: number };
