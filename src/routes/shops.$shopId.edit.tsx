@@ -330,6 +330,73 @@ function EditShop() {
               maxLength={800}
             />
           </div>
+
+          <div>
+            <Label htmlFor="mob">Owner mobile number</Label>
+            <Input
+              id="mob"
+              type="tel"
+              inputMode="tel"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+              placeholder="+91 98765 43210"
+            />
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              Shown publicly so customers can call.
+            </p>
+          </div>
+
+          <div>
+            <Label>Opening hours</Label>
+            <div className="mt-1 grid grid-cols-2 gap-3">
+              <div>
+                <span className="text-[11px] text-muted-foreground">Opens</span>
+                <Input
+                  type="time"
+                  value={openTime}
+                  onChange={(e) => setOpenTime(e.target.value)}
+                />
+              </div>
+              <div>
+                <span className="text-[11px] text-muted-foreground">Closes</span>
+                <Input
+                  type="time"
+                  value={closeTime}
+                  onChange={(e) => setCloseTime(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {DAY_LABELS.map((d, i) => {
+                const on = openDays.includes(i);
+                return (
+                  <button
+                    type="button"
+                    key={d}
+                    onClick={() =>
+                      setOpenDays((s) =>
+                        on ? s.filter((x) => x !== i) : [...s, i].sort((a, b) => a - b),
+                      )
+                    }
+                    className={`rounded-full border px-3 py-1 text-xs transition ${
+                      on
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-card"
+                    }`}
+                  >
+                    {d}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {!approved && (
+            <div className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900">
+              This shop is awaiting admin approval and is not yet visible to other users.
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="price">Starting (₹)</Label>
