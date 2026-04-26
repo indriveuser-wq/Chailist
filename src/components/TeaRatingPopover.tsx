@@ -107,6 +107,7 @@ export function TeaRow({
   avg,
   count,
   onRated,
+  isLast,
 }: {
   teaId: string;
   name: string;
@@ -114,6 +115,7 @@ export function TeaRow({
   avg: number;
   count: number;
   onRated: () => void;
+  isLast?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -133,7 +135,12 @@ export function TeaRow({
       <span className="font-bold text-primary">₹{price.toFixed(0)}</span>
       <AnimatePresence>
         {open && (
-          <TeaRatingPopover teaId={teaId} onRated={onRated} onClose={() => setOpen(false)} />
+          <TeaRatingPopover
+            teaId={teaId}
+            onRated={onRated}
+            onClose={() => setOpen(false)}
+            placement={isLast ? "top" : "bottom"}
+          />
         )}
       </AnimatePresence>
     </li>
