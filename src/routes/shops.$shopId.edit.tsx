@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ArrowLeft, ImagePlus, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
+import { DAY_LABELS } from "@/lib/hours";
 
 export const Route = createFileRoute("/shops/$shopId/edit")({
   component: EditShop,
@@ -56,6 +57,11 @@ function EditShop() {
   const [teas, setTeas] = useState<Tea[]>([]);
   const [removedImageIds, setRemovedImageIds] = useState<string[]>([]);
   const [removedTeaIds, setRemovedTeaIds] = useState<string[]>([]);
+  const [mobile, setMobile] = useState("");
+  const [openTime, setOpenTime] = useState("");
+  const [closeTime, setCloseTime] = useState("");
+  const [openDays, setOpenDays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]);
+  const [approved, setApproved] = useState(true);
 
   useEffect(() => {
     if (!authLoading && !user) nav({ to: "/login" });
@@ -86,6 +92,11 @@ function EditShop() {
       setPriceRange(shop.price_range as any);
       setTags(shop.tags ?? []);
       setMainImage(shop.image_url);
+      setMobile((shop as any).mobile_number ?? "");
+      setOpenTime(((shop as any).open_time ?? "08:00").slice(0, 5));
+      setCloseTime(((shop as any).close_time ?? "21:00").slice(0, 5));
+      setOpenDays((shop as any).open_days ?? [0, 1, 2, 3, 4, 5, 6]);
+      setApproved(!!shop.approved);
       const [{ data: imgs }, { data: ts }] = await Promise.all([
         supabase.from("shop_images").select("id, url").eq("shop_id", shopId).order("sort_order"),
         supabase.from("tea_items").select("id, name, price").eq("shop_id", shopId).order("created_at"),
@@ -161,6 +172,10 @@ function EditShop() {
           price_range: priceRange,
           tags,
           image_url,
+          mobile_number: mobile.trim() || null,
+          open_time: openTime || null,
+          close_time: closeTime || null,
+          open_days: openDays,
         })
         .eq("id", shopId);
       if (upErr) throw upErr;
