@@ -33,7 +33,7 @@ function ShopDetail() {
   const { shopId } = useParams({ from: "/shops/$shopId" });
   const { pathname } = useLocation();
   const isChildRoute = /\/shops\/[^/]+\/(edit|menu)(\/|$)/.test(pathname);
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [shop, setShop] = useState<ShopWithStats | null>(null);
   const [teas, setTeas] = useState<TeaWithStats[]>([]);
   const [gallery, setGallery] = useState<string[]>([]);
@@ -191,7 +191,7 @@ function ShopDetail() {
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <div className="pointer-events-auto relative z-10 flex items-center gap-2">
-            {user && shop.owner_id === user.id && (
+            {user && (shop.owner_id === user.id || isAdmin) && (
               <Link
                 to="/shops/$shopId/edit"
                 params={{ shopId: shop.id }}
