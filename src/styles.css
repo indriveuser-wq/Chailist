@@ -154,6 +154,17 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
+  html, body {
+    /* Prevent any rogue child from creating a horizontal scrollbar on the page.
+       Intentional horizontal scrollers (e.g. .no-scrollbar carousels) still
+       work because they create their own scroll context. */
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+  body {
+    /* Guard against extra-wide elements pushing the layout. */
+    min-width: 0;
+  }
   h1, h2, h3, h4 {
     font-family: var(--font-display);
     letter-spacing: -0.015em;
