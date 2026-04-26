@@ -10,10 +10,12 @@ export function TeaRatingPopover({
   teaId,
   onRated,
   onClose,
+  placement = "bottom",
 }: {
   teaId: string;
   onRated: () => void;
   onClose: () => void;
+  placement?: "top" | "bottom";
 }) {
   const { user } = useAuth();
   const [rating, setRating] = useState(0);
@@ -53,7 +55,9 @@ export function TeaRatingPopover({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.96 }}
       transition={{ duration: 0.18 }}
-      className="absolute right-0 top-full z-20 mt-2 w-56 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-elevated)]"
+      className={`absolute right-0 z-30 w-56 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-elevated)] ${
+        placement === "top" ? "bottom-full mb-2" : "top-full mt-2"
+      }`}
     >
       <p className="mb-2 text-center text-xs font-semibold text-muted-foreground">Rate this tea</p>
       <div className="flex items-center justify-center gap-1">
