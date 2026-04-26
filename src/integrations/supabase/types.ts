@@ -164,12 +164,16 @@ export type Database = {
       shops: {
         Row: {
           approved: boolean
+          close_time: string | null
           created_at: string
           description: string | null
           id: string
           image_url: string | null
           location: string
+          mobile_number: string | null
           name: string
+          open_days: number[]
+          open_time: string | null
           owner_id: string | null
           price_range: string
           starting_price: number
@@ -179,12 +183,16 @@ export type Database = {
         }
         Insert: {
           approved?: boolean
+          close_time?: string | null
           created_at?: string
           description?: string | null
           id?: string
           image_url?: string | null
           location: string
+          mobile_number?: string | null
           name: string
+          open_days?: number[]
+          open_time?: string | null
           owner_id?: string | null
           price_range?: string
           starting_price?: number
@@ -194,12 +202,16 @@ export type Database = {
         }
         Update: {
           approved?: boolean
+          close_time?: string | null
           created_at?: string
           description?: string | null
           id?: string
           image_url?: string | null
           location?: string
+          mobile_number?: string | null
           name?: string
+          open_days?: number[]
+          open_time?: string | null
           owner_id?: string | null
           price_range?: string
           starting_price?: number
