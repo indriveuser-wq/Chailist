@@ -273,7 +273,7 @@ function ShopDetail() {
             <p className="text-sm text-muted-foreground">Menu coming soon.</p>
           ) : (
             <ul className="divide-y divide-border rounded-2xl border border-border bg-card shadow-[var(--shadow-soft)]">
-              {teas.map((t) => (
+              {teas.map((t, i) => (
                 <TeaRow
                   key={t.id}
                   teaId={t.id}
@@ -282,6 +282,7 @@ function ShopDetail() {
                   avg={t.avg_rating}
                   count={t.rating_count}
                   onRated={reload}
+                  isLast={i === teas.length - 1}
                 />
               ))}
             </ul>
