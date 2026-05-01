@@ -176,7 +176,7 @@ function Explore() {
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
             {filtered.map((s, i) => (
-              <ShopCard key={s.id} shop={s} index={i} />
+              <ShopCard key={`${s.id}-${i}`} shop={s} index={i} />
             ))}
           </div>
         )}

@@ -21,6 +21,28 @@ export type Shop = {
 
 export type ShopWithStats = Shop & { avg_rating: number; rating_count: number };
 
+// Lightweight in-memory cache so navigating back to a list page is instant
+// instead of refetching from the network every time.
+type CacheEntry<T> = { data: T; ts: number };
+const CACHE_TTL = 60_000; // 1 minute
+const cache = new Map<string, CacheEntry<unknown>>();
+
+function cacheGet<T>(key: string): T | null {
+  const e = cache.get(key) as CacheEntry<T> | undefined;
+  if (!e) return null;
+  if (Date.now() - e.ts > CACHE_TTL) {
+    cache.delete(key);
+    return null;
+  }
+  return e.data;
+}
+function cacheSet<T>(key: string, data: T) {
+  cache.set(key, { data, ts: Date.now() });
+}
+export function invalidateShopCache() {
+  for (const k of cache.keys()) if (k.startsWith("shops:") || k.startsWith("shop:")) cache.delete(k);
+}
+
 export type TeaWithStats = {
   id: string;
   shop_id: string;
@@ -66,13 +88,19 @@ export async function fetchShops(opts?: {
   includeUnapproved?: boolean;
   ownerId?: string;
 }): Promise<ShopWithStats[]> {
+  const key = `shops:${opts?.ownerId ?? ""}:${opts?.includeUnapproved ? "all" : "approved"}`;
+  const cached = cacheGet<ShopWithStats[]>(key);
+  if (cached) return cached;
   let q = supabase.from("shops").select("*").order("created_at", { ascending: false });
   if (opts?.ownerId) q = q.eq("owner_id", opts.ownerId);
   else if (!opts?.includeUnapproved) q = q.eq("approved", true);
 
   const { data: shops, error } = await q;
   if (error) throw error;
-  if (!shops || shops.length === 0) return [];
+  if (!shops || shops.length === 0) {
+    cacheSet(key, []);
+    return [];
+  }
 
   const { data: stats } = await supabase
     .from("shop_stats")
@@ -80,7 +108,7 @@ export async function fetchShops(opts?: {
     .in("shop_id", shops.map((s) => s.id));
 
   const map = new Map((stats ?? []).map((s: any) => [s.shop_id, s]));
-  return shops.map((s) => {
+  const result = shops.map((s) => {
     const st: any = map.get(s.id);
     return {
       ...(s as Shop),
@@ -88,20 +116,30 @@ export async function fetchShops(opts?: {
       rating_count: Number(st?.rating_count ?? 0),
     };
   });
+  cacheSet(key, result);
+  return result;
 }
 
 export async function fetchShop(id: string): Promise<ShopWithStats | null> {
+  const key = `shop:${id}`;
+  const cached = cacheGet<ShopWithStats | null>(key);
+  if (cached !== null) return cached;
   const { data, error } = await supabase.from("shops").select("*").eq("id", id).maybeSingle();
   if (error) throw error;
-  if (!data) return null;
+  if (!data) {
+    cacheSet(key, null);
+    return null;
+  }
   const { data: stats } = await supabase
     .from("shop_stats")
     .select("*")
     .eq("shop_id", id)
     .maybeSingle();
-  return {
+  const result = {
     ...(data as Shop),
     avg_rating: Number((stats as any)?.avg_rating ?? 0),
     rating_count: Number((stats as any)?.rating_count ?? 0),
   };
+  cacheSet(key, result);
+  return result;
 }
