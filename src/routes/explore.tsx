@@ -25,6 +25,7 @@ import { Slider } from "@/components/ui/slider";
 
 export const Route = createFileRoute("/explore")({
   component: Explore,
+  loader: () => fetchShops(),
   head: () => ({
     meta: [
       { title: "Explore tea shops — ChaiList" },
@@ -34,7 +35,8 @@ export const Route = createFileRoute("/explore")({
 });
 
 function Explore() {
-  const [shops, setShops] = useState<ShopWithStats[] | null>(null);
+  const initialShops = Route.useLoaderData();
+  const [shops, setShops] = useState<ShopWithStats[] | null>(initialShops ?? null);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("popular");
   const [minRating, setMinRating] = useState(0);
@@ -43,6 +45,7 @@ function Explore() {
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (shops && shops.length > 0) return;
     fetchShops().then(setShops).catch(console.error);
   }, []);
 

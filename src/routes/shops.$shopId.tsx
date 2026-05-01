@@ -16,6 +16,7 @@ import { getOpenStatus, DAY_LABELS } from "@/lib/hours";
 
 export const Route = createFileRoute("/shops/$shopId")({
   component: ShopDetail,
+  loader: ({ params }) => fetchShop(params.shopId),
 });
 
 type Review = {

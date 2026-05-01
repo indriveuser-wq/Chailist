@@ -18,6 +18,13 @@ export function HeroSlider() {
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
 
+  // Warm the next slide's image so swipes/auto-advance feel instant.
+  useEffect(() => {
+    const next = (i + 1) % SLIDES.length;
+    const img = new Image();
+    img.src = SLIDES[next].src;
+  }, [i]);
+
   useEffect(() => {
     if (paused) return;
     const t = setInterval(() => setI((p) => (p + 1) % SLIDES.length), INTERVAL);
@@ -49,10 +56,13 @@ export function HeroSlider() {
           src={s.src}
           alt={s.title}
           draggable={false}
+          loading={i === 0 ? "eager" : "lazy"}
+          fetchPriority={i === 0 ? "high" : "auto"}
+          decoding="async"
           initial={{ opacity: 0, scale: 1.08 }}
           animate={{ opacity: 1, scale: 1.02 }}
           exit={{ opacity: 0, scale: 1.05 }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="absolute inset-0 h-full w-full select-none object-cover"
         />
       </AnimatePresence>

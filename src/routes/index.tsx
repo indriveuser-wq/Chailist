@@ -15,6 +15,7 @@ import slideCafe from "@/assets/slide-cafe.jpg";
 
 export const Route = createFileRoute("/")({
   component: Home,
+  loader: () => fetchShops(),
   head: () => ({
     meta: [
       { title: "ChaiList — Discover & Rate Tea Shops" },
@@ -27,12 +28,14 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const [shops, setShops] = useState<ShopWithStats[] | null>(null);
+  const initialShops = Route.useLoaderData();
+  const [shops, setShops] = useState<ShopWithStats[] | null>(initialShops ?? null);
   const [search, setSearch] = useState("");
   const [mood, setMood] = useState("all");
   const { user } = useAuth();
 
   useEffect(() => {
+    if (shops && shops.length > 0) return;
     fetchShops().then(setShops).catch(console.error);
   }, []);
 
