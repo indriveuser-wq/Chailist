@@ -22,7 +22,9 @@ export function ShopCard({ shop, index = 0 }: { shop: ShopWithStats; index?: num
             <img
               src={shop.image_url}
               alt={shop.name}
-              loading="lazy"
+              loading={index < 4 ? "eager" : "lazy"}
+              fetchPriority={index < 2 ? "high" : "auto"}
+              decoding="async"
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
           ) : (
