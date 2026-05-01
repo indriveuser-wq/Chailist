@@ -3,6 +3,7 @@ import appCss from "../styles.css?url";
 import { AuthProvider } from "@/lib/auth";
 import { Toaster } from "@/components/ui/sonner";
 import { PageTransition } from "@/components/PageTransition";
+import { RoutePrefetcher } from "@/components/RoutePrefetcher";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -38,6 +39,7 @@ export const Route = createRootRoute({
   shellComponent: RootShell,
   component: () => (
     <AuthProvider>
+      <RoutePrefetcher />
       <PageTransition>
         <Outlet />
       </PageTransition>
