@@ -21,6 +21,28 @@ export type Shop = {
 
 export type ShopWithStats = Shop & { avg_rating: number; rating_count: number };
 
+// Lightweight in-memory cache so navigating back to a list page is instant
+// instead of refetching from the network every time.
+type CacheEntry<T> = { data: T; ts: number };
+const CACHE_TTL = 60_000; // 1 minute
+const cache = new Map<string, CacheEntry<unknown>>();
+
+function cacheGet<T>(key: string): T | null {
+  const e = cache.get(key) as CacheEntry<T> | undefined;
+  if (!e) return null;
+  if (Date.now() - e.ts > CACHE_TTL) {
+    cache.delete(key);
+    return null;
+  }
+  return e.data;
+}
+function cacheSet<T>(key: string, data: T) {
+  cache.set(key, { data, ts: Date.now() });
+}
+export function invalidateShopCache() {
+  for (const k of cache.keys()) if (k.startsWith("shops:") || k.startsWith("shop:")) cache.delete(k);
+}
+
 export type TeaWithStats = {
   id: string;
   shop_id: string;
