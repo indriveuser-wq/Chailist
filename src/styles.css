@@ -184,9 +184,9 @@
     opacity: 0.85;
   }
   .glass {
-    background: color-mix(in oklab, var(--background) 75%, transparent);
-    backdrop-filter: saturate(140%) blur(14px);
-    -webkit-backdrop-filter: saturate(140%) blur(14px);
+    background: color-mix(in oklab, var(--background) 45%, transparent);
+    backdrop-filter: saturate(160%) blur(20px);
+    -webkit-backdrop-filter: saturate(160%) blur(20px);
   }
 }
 
