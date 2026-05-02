@@ -97,9 +97,7 @@ function NewShop() {
         image_url = supabase.storage.from("shop-images").getPublicUrl(path).data.publicUrl;
       }
 
-      // ensure shop_owner role
-      await supabase.from("user_roles").insert({ user_id: user.id, role: "shop_owner" }).then();
-
+      // shop_owner role is auto-granted server-side by a trigger on shops INSERT.
       const { data: shop, error } = await supabase
         .from("shops")
         .insert({

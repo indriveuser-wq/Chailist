@@ -13,6 +13,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { TeaRow } from "@/components/TeaRatingPopover";
 import { ShopGallery } from "@/components/ShopGallery";
 import { getOpenStatus, DAY_LABELS } from "@/lib/hours";
+import { z } from "zod";
 
 export const Route = createFileRoute("/shops/$shopId")({
   component: ShopDetail,
@@ -30,12 +31,25 @@ type Review = {
 
 const PRICE_LABEL: Record<string, string> = { low: "₹", medium: "₹₹", high: "₹₹₹" };
 
+const reviewSchema = z.object({
+  rating: z.number().int().min(1).max(5),
+  review_text: z
+    .string()
+    .trim()
+    .max(1000, "Review must be under 1000 characters")
+    .transform((v) => (v.length === 0 ? null : v))
+    .nullable(),
+});
+
 function ShopDetail() {
   const { shopId } = useParams({ from: "/shops/$shopId" });
   const { pathname } = useLocation();
   const isChildRoute = /\/shops\/[^/]+\/(edit|menu)(\/|$)/.test(pathname);
   const { user, isAdmin } = useAuth();
-  const [shop, setShop] = useState<ShopWithStats | null>(null);
+  // Seed from the route loader so the page paints instantly with cached data
+  // instead of waiting for an in-component fetch.
+  const initialShop = Route.useLoaderData() as ShopWithStats | null;
+  const [shop, setShop] = useState<ShopWithStats | null>(initialShop ?? null);
   const [teas, setTeas] = useState<TeaWithStats[]>([]);
   const [gallery, setGallery] = useState<string[]>([]);
   const [activeImg, setActiveImg] = useState(0);
@@ -43,7 +57,7 @@ function ShopDetail() {
   const [myRating, setMyRating] = useState<number>(0);
   const [myText, setMyText] = useState("");
   const [existing, setExisting] = useState<Review | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialShop);
   const [scrolled, setScrolled] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -53,22 +67,22 @@ function ShopDetail() {
   }
 
   async function reload() {
-    const s = await fetchShop(shopId);
-    setShop(s);
-    const [t, imgs] = await Promise.all([
+    // Run shop refresh, teas, images, and reviews fully in parallel.
+    const [s, t, imgs, ratingsRes] = await Promise.all([
+      fetchShop(shopId),
       fetchTeasWithStats(shopId),
       fetchShopImages(shopId),
+      supabase
+        .from("ratings")
+        .select("id, rating, review_text, created_at, user_id")
+        .eq("shop_id", shopId)
+        .order("created_at", { ascending: false }),
     ]);
+    setShop(s);
     setTeas(t);
-    // Combine main image with gallery, dedupe.
     const combined = [s?.image_url, ...imgs].filter(Boolean) as string[];
     setGallery(Array.from(new Set(combined)));
-    const { data: r } = await supabase
-      .from("ratings")
-      .select("id, rating, review_text, created_at, user_id")
-      .eq("shop_id", shopId)
-      .order("created_at", { ascending: false });
-    const rows = (r ?? []) as Omit<Review, "profile">[];
+    const rows = (ratingsRes.data ?? []) as Omit<Review, "profile">[];
     // No FK between ratings.user_id and profiles → fetch profiles in a 2nd query.
     let profileMap = new Map<string, { display_name: string | null; avatar_url: string | null }>();
     const userIds = Array.from(new Set(rows.map((x) => x.user_id)));
@@ -111,10 +125,17 @@ function ShopDetail() {
   async function submitRating() {
     if (!user) return;
     if (!myRating) return toast.error("Pick a star rating");
+    const parsed = reviewSchema.safeParse({ rating: myRating, review_text: myText });
+    if (!parsed.success) return toast.error(parsed.error.issues[0].message);
     const { error } = await supabase
       .from("ratings")
       .upsert(
-        { user_id: user.id, shop_id: shopId, rating: myRating, review_text: myText.trim() || null },
+        {
+          user_id: user.id,
+          shop_id: shopId,
+          rating: parsed.data.rating,
+          review_text: parsed.data.review_text,
+        },
         { onConflict: "user_id,shop_id" },
       );
     if (error) return toast.error(error.message);
