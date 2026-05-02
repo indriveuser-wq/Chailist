@@ -31,6 +31,16 @@ type Review = {
 
 const PRICE_LABEL: Record<string, string> = { low: "₹", medium: "₹₹", high: "₹₹₹" };
 
+const reviewSchema = z.object({
+  rating: z.number().int().min(1).max(5),
+  review_text: z
+    .string()
+    .trim()
+    .max(1000, "Review must be under 1000 characters")
+    .transform((v) => (v.length === 0 ? null : v))
+    .nullable(),
+});
+
 function ShopDetail() {
   const { shopId } = useParams({ from: "/shops/$shopId" });
   const { pathname } = useLocation();
