@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { MapPin, BadgeCheck, Star } from "lucide-react";
+import { useEffect, useState } from "react";
 import type { ShopWithStats } from "@/lib/queries";
 import { FavoriteButton } from "./FavoriteButton";
 import { getOpenStatus } from "@/lib/hours";
@@ -7,8 +8,11 @@ import { getOpenStatus } from "@/lib/hours";
 const PRICE_LABEL: Record<string, string> = { low: "₹", medium: "₹₹", high: "₹₹₹" };
 
 export function ShopCard({ shop, index = 0 }: { shop: ShopWithStats; index?: number }) {
-  const status = getOpenStatus(shop.open_time, shop.close_time, shop.open_days);
   const hasHours = !!(shop.open_time && shop.close_time);
+  const [status, setStatus] = useState<ReturnType<typeof getOpenStatus> | null>(null);
+  useEffect(() => {
+    setStatus(getOpenStatus(shop.open_time, shop.close_time, shop.open_days));
+  }, [shop.open_time, shop.close_time, shop.open_days]);
   return (
     <Link
       to="/shops/$shopId"
@@ -55,7 +59,7 @@ export function ShopCard({ shop, index = 0 }: { shop: ShopWithStats; index?: num
           </div>
 
           {/* open/closed badge bottom-right */}
-          {hasHours && (
+          {hasHours && status && (
             <div
               className={`absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold shadow-[var(--shadow-soft)] ${
                 status.isOpen
