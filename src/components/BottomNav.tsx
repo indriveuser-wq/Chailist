@@ -107,7 +107,7 @@ export function BottomNav() {
           const active = pathname === to || (to !== "/" && pathname.startsWith(to));
           if (primary) {
             return (
-              <li key={to}>
+              <li key={label}>
                 <Link
                   to={to}
                   search={{ focus: 1 } as never}
@@ -120,7 +120,7 @@ export function BottomNav() {
             );
           }
           return (
-            <li key={to}>
+            <li key={label}>
               <Link
                 to={to}
                 className={cn(
